@@ -24,11 +24,51 @@
             <div style="display:flex;align-items:center;flex-shrink:0;">
                 <span onclick="toggleNav()" style="cursor:pointer;"><img src="images/banner.png" alt="Nexora logo" style="height:55px; width:auto;"></span>
             </div>
-            
-                <div style="width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <nav style="display:flex;align-items:center;gap:16px;margin-left:auto;">
+                <div onclick="toggleProfileDropdown()" id="profileTrigger" style="width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">
                     <img src="images/avatar.png" alt="User avatar" style="width:100%;height:100%;object-fit:cover;display:block;">
                 </div>
             </nav>
+            <!-- Profile Dropdown -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <button class="profile-dropdown-close" onclick="toggleProfileDropdown()">&times;</button>
+                <div class="profile-dropdown-email">user@gmail.com</div>
+                <div class="profile-dropdown-avatar-wrap">
+                    <div class="profile-dropdown-avatar">
+                        <img src="images/avatar.png" alt="User avatar">
+                    </div>
+                    
+                </div>
+                <div class="profile-dropdown-greeting">Hi, User!</div>
+                <ul class="profile-dropdown-menu">
+                    
+                    <li>
+                        <a href="#">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Help
+                        </a>
+                    </li>
+                    <li class="logout">
+                        <a href="{{ route('signin') }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </header>
         <div id="main">
             <div id="mySidenav" class="sidenav">
@@ -57,7 +97,7 @@
                 <!-- Parent Menu Item (Accordion Toggle) -->
                 <a href="#" class="nav-item" onclick="toggleAccordion('stockSubmenu', this)">
                     <svg width="31" height="33" viewBox="0 0 31 33" fill="none" xmlns="http://www.w3.org/2000/svg white-space: nowrap;">
-                        <path d="M1.0002 8.80686L14.3225 1.43576C14.7543 1.1981 14.9701 1.07754 15.1957 1.03104C15.3969 0.989654 15.6035 0.989654 15.8047 1.03104C16.0319 1.07754 16.2461 1.1981 16.6763 1.43576L30.0002 8.80686V22.2884C30.0002 22.9015 30.0002 23.2063 29.9132 23.4802C29.8375 23.7203 29.7132 23.9397 29.5491 24.1226C29.3638 24.331 29.1093 24.4705 28.6001 24.7529L15.5002 32L2.40025 24.7529C1.89114 24.4705 1.63659 24.331 1.45131 24.1226C1.2872 23.9397 1.16288 23.7203 1.0872 23.4802C1.0002 23.2063 1.0002 22.8998 1.0002 22.285V8.80686ZM15.5002 32V16.3915M30.0002 8.80686L15.5002 16.3915M1.0002 8.80686L15.5002 16.3915" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M1.0002 8.80686L14.3225 1.43576C14.7543 1.1981 14.9701 1.07754 15.1957 1.03104C15.3969 0.989654 15.6035 0.989654 15.8047 1.03104C16.0319 1.07754 16.2461 1.1981 16.6763 1.43576L30.0002 8.80686V22.2884C30.0002 22.9015 30.0002 23.2063 29.9132 23.4802C29.8375 23.7203 29.7132 23.9397 29.5491 24.1226C29.3638 24.331 29.1093 24.4705 28.6001 24.7529L15.5002 32L2.40025 24.7529C1.89114 24.4705 1.63659 24.331 1.45131 24.1226C1.2872 23.9397 1.16288 23.7203 1.0872 23.4802C1.0002 23.2063 1.0002 22.8998 1.0002 22.285V8.80686ZM15.5002 32V16.3915M30.0002 8.80686L15.5002 16.3915M1.0002 8.80686L15.5002 16.3915" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
 
                     <span style="flex: 1;">Stock</span>
@@ -76,8 +116,8 @@
                     </a>
 
                     <a href="{{ route('stock-levels') }}" class="nav-item nested-item">
-                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.8371 12.6018L12.4187 18.4027L1.00024 12.6018M23.8371 18.4027L12.4187 24.2035L1.00024 18.4027M23.8371 6.80089L12.4187 12.6018L1.00024 6.80089L12.4187 1L23.8371 6.80089Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         Stock Levels
                     </a>
@@ -91,12 +131,12 @@
                 </div>
                 <a href="{{ route('warehouse') }}" class="nav-item">
                     <svg width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14.5 1C14.736 1 14.9459 1.04976 15.1426 1.14746L15.1543 1.15332L15.167 1.15918L26.7666 6.53711L26.7744 6.54102C27.1293 6.70197 27.4183 6.95954 27.6475 7.35254C27.8777 7.74727 28.0007 8.20086 28 8.73828V26.6387C28 27.3399 27.7923 27.8961 27.3916 28.3613C26.9954 28.8213 26.5803 29.0006 26.1016 29H21.2998V15.5547H7.7002V29H2.90039C2.42175 29 2.00598 28.82 1.60938 28.3604C1.25922 27.9544 1.0557 27.4781 1.00977 26.8945L1 26.6377V8.73926C1.00004 8.20159 1.12314 7.74761 1.35352 7.35254C1.583 6.95906 1.87264 6.70182 2.22656 6.54102L2.2334 6.53711L13.833 1.15918L13.8457 1.15332L13.8574 1.14746C14.0541 1.04976 14.264 1 14.5 1ZM17.8496 27.6387V29H16.9502V27.6387H17.8496ZM12.0498 27.6387V29H11.1504V27.6387H12.0498ZM14.9502 22.5967V23.958H14.0498V22.5967H14.9502ZM27.0996 8.10059L26.5205 7.83203L14.9209 2.4541L14.5 2.25879L14.0791 2.4541L2.47949 7.83203L1.90039 8.10059V27.6387H6.7998V16.5547C6.7998 15.8539 7.00825 15.2989 7.40918 14.835C7.75774 14.4317 8.12007 14.2434 8.52539 14.2021L8.70117 14.1934H20.2998C20.7779 14.1934 21.1938 14.3737 21.5918 14.835C21.9931 15.3002 22.2009 15.8548 22.2002 16.5537V27.6387H27.0996V8.10059Z" stroke="white" stroke-width="2"/>
+                        <path d="M14.5 1C14.736 1 14.9459 1.04976 15.1426 1.14746L15.1543 1.15332L15.167 1.15918L26.7666 6.53711L26.7744 6.54102C27.1293 6.70197 27.4183 6.95954 27.6475 7.35254C27.8777 7.74727 28.0007 8.20086 28 8.73828V26.6387C28 27.3399 27.7923 27.8961 27.3916 28.3613C26.9954 28.8213 26.5803 29.0006 26.1016 29H21.2998V15.5547H7.7002V29H2.90039C2.42175 29 2.00598 28.82 1.60938 28.3604C1.25922 27.9544 1.0557 27.4781 1.00977 26.8945L1 26.6377V8.73926C1.00004 8.20159 1.12314 7.74761 1.35352 7.35254C1.583 6.95906 1.87264 6.70182 2.22656 6.54102L2.2334 6.53711L13.833 1.15918L13.8457 1.15332L13.8574 1.14746C14.0541 1.04976 14.264 1 14.5 1ZM17.8496 27.6387V29H16.9502V27.6387H17.8496ZM12.0498 27.6387V29H11.1504V27.6387H12.0498ZM14.9502 22.5967V23.958H14.0498V22.5967H14.9502ZM27.0996 8.10059L26.5205 7.83203L14.9209 2.4541L14.5 2.25879L14.0791 2.4541L2.47949 7.83203L1.90039 8.10059V27.6387H6.7998V16.5547C6.7998 15.8539 7.00825 15.2989 7.40918 14.835C7.75774 14.4317 8.12007 14.2434 8.52539 14.2021L8.70117 14.1934H20.2998C20.7779 14.1934 21.1938 14.3737 21.5918 14.835C21.9931 15.3002 22.2009 15.8548 22.2002 16.5537V27.6387H27.0996V8.10059Z" stroke="currentColor" stroke-width="2"/>
                     </svg>
                     Warehouse
                 </a>
             </div>
-            <div id="content" style="flex:1;padding: 10px 10px;overflow-y:auto;min-width:0;overflow-x:hidden;">
+            <div id="content" style="flex:1;padding: 10px 0;overflow-y:auto;min-width:0;overflow-x:hidden;">
                 <!-- Inventory Items Card -->
                 <div style="background:#ffffff;border-radius:20px;overflow:hidden;min-width:0;">
                     <!-- Header: Title + Search + Filters -->
@@ -135,14 +175,14 @@
                         <table class="stock-table" style="width:100%;table-layout:auto;border-collapse:collapse;">
                             <thead>
                                 <tr style="background:#1b3a6b;">
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">SKU ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">ITEM NAME ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">CATEGORY ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">WAREHOUSE ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">QUANTITY ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">UNIT COST ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">STATUS ⇅</th>
-                                    <th style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">ACTIONS ⇅</th>
+                                    <th data-sort="sku" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="name" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="category" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">CATEGORY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="warehouse" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">WAREHOUSE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="quantity" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">QUANTITY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="unit_cost" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">UNIT COST <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="status" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">STATUS <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                                    <th data-sort="actions" style="text-align:center;padding:12px 8px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;">ACTIONS <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,17 +229,19 @@
             const main = document.getElementById("main");
             
             // If the sidebar is currently open, close it
-            if (sidenav.style.width === "250px") {
-                sidenav.style.width = "0";
-                main.style.marginLeft = "0";
-                localStorage.setItem('sidebarState', 'closed');
-            } 
-            // Otherwise, open it
-            else {
-                sidenav.style.width = "250px";
-                main.style.marginLeft = "250px";
-                localStorage.setItem('sidebarState', 'open');
-            }
+                if (sidenav.style.width === "250px") {
+                    sidenav.style.width = "0";
+                    main.style.marginLeft = "0";
+                    main.classList.remove("sidebar-open");
+                    localStorage.setItem('sidebarState', 'closed');
+                } 
+                // Otherwise, open it
+                else {
+                    sidenav.style.width = "250px";
+                    main.style.marginLeft = "250px";
+                    main.classList.add("sidebar-open");
+                    localStorage.setItem('sidebarState', 'open');
+                }
         }
         function toggleAccordion(menuId, element) {
             const submenu = document.getElementById(menuId);
@@ -227,6 +269,7 @@
                 // Set the sidebar to open
                 sidenav.style.width = "250px";
                 main.style.marginLeft = "250px";
+                main.classList.add("sidebar-open");
 
                 // Re-enable the transition after the initial state is set.
                 // Using a timeout allows the browser to render the initial state without animation.
@@ -248,6 +291,10 @@
                 }, 10);
             }
         })();
+
+        function toggleProfileDropdown() {
+            document.getElementById('profileDropdown').classList.toggle('open');
+        }
 
     </script>
 </html>
