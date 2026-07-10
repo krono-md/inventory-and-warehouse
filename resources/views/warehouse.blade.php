@@ -24,7 +24,13 @@
 
             /* Form input base */
             .form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #0f172a; font-family: 'Inter', sans-serif; outline: none; }
-            .form-input:focus { border-color: #1b6fc8; }
+            .form-inp<div style="position:relative;width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#a8d1f7;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                    <span style="position:absolute;top:0;right:0;width:14px;height:14px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #0b1e3d;">3</span>
+                </div>ut:focus { border-color: #1b6fc8; }
             .form-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
             .form-error { color: #ef4444; font-size: 11px; margin-top: 4px; }
         </style>
@@ -35,6 +41,12 @@
                 <span onclick="toggleNav()" style="cursor:pointer;"><img src="images/banner.png" alt="Nexora logo" style="height:55px; width:auto;"></span>
             </div>
             <nav style="display:flex;align-items:center;gap:16px;margin-left:auto;">
+                <div style="position:relative;width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#a8d1f7;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                </div>
                 <div onclick="toggleProfileDropdown()" id="profileTrigger" style="width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">
                     <img src="images/avatar.png" alt="User avatar" style="width:100%;height:100%;object-fit:cover;display:block;">
                 </div>

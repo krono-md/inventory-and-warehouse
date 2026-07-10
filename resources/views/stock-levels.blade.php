@@ -27,6 +27,12 @@
                 <span onclick="toggleNav()" style="cursor:pointer;"><img src="images/banner.png" alt="Nexora logo" style="height:55px; width:auto;"></span>
             </div>
             <nav style="display:flex;align-items:center;gap:16px;margin-left:auto;">
+                <div style="position:relative;width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#a8d1f7;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                </div>
                 <div onclick="toggleProfileDropdown()" id="profileTrigger" style="width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">
                     <img src="images/avatar.png" alt="User avatar" style="width:100%;height:100%;object-fit:cover;display:block;">
                 </div>
@@ -140,7 +146,7 @@
             </div>
             <div id="content" style="flex:1;padding: 10px 0;overflow-y:auto;min-width:0;overflow-x:hidden;">
                 <!-- Stat Cards Row -->
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
                     <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
                         <p style="font-size:15px;color:#94a3b8;">In Stock Items</p>
                         <p style="font-size:40px;font-weight:bold;color:#fff;">{{ $inStockCount }}</p>
