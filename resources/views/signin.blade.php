@@ -274,7 +274,7 @@
     <div class="main-wrapper">
         
         <header class="header">
-            <a href="signIn.blade.php" class="nexora-logo">
+            <a href="{{ route('signin') }}" class="nexora-logo" id="headerLogoBtn">
                 <img src="images/Banner Transparent.png" alt="Nexora Logo">
             </a>
         </header>
@@ -284,15 +284,16 @@
                 <div class="login-card">
                     <h1>Sign In</h1>
                     
-                    <form>
+                    <form method="POST" action="{{ route('signin.authenticate') }}">
+                        @csrf
                         <div class="input-group">
                             <label for="username">Username</label>
-                            <input id="username" type="text" placeholder="Enter Username">
+                            <input id="username" name="username" type="text" placeholder="Enter Username" required>
                         </div>
                         
                         <div class="input-group">
                             <label for="password">Password</label>
-                            <input id="password" type="password" placeholder="Enter Password">
+                            <input id="password" name="password" type="password" placeholder="Enter Password" required>
                         </div>
                         
                         <button type="submit" id="signInBtn">Log In</button>
@@ -311,11 +312,13 @@
     const SPLASH_DURATION = 4300;
     const splash = document.getElementById("splash");
 
-    // 1. Hide splash screen after initial load
-    setTimeout(() => {
+    function dismissSplash() {
         splash.style.opacity = "0";
         splash.style.pointerEvents = "none";
-    }, SPLASH_DURATION);
+    }
+
+    setTimeout(dismissSplash, SPLASH_DURATION);
+    splash.addEventListener("click", dismissSplash);
 
     // 2. Smooth, fast fade-out for exiting the page
     function smoothExit(e, url) {
@@ -349,9 +352,7 @@
     const headerLogoBtn = document.getElementById("headerLogoBtn");
 
     if (signInBtn) signInBtn.addEventListener("click", (e) => {
-        e.preventDefault();
         localStorage.removeItem('stockSubmenuState');
-        smoothExit(e, "{{ route('index') }}");
     });
     if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('index') }}"));

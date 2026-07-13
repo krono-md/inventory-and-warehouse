@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class StockMovement extends Model
+{
+    public $timestamps = false;
+
+    protected $fillable = [
+        'type',
+        'item_id',
+        'warehouse_id',
+        'quantity',
+        'reference',
+        'reference_id',
+        'performed_by',
+        'notes',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+}

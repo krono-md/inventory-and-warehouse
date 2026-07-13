@@ -225,11 +225,11 @@
         
         <!-- Top Navigation -->
         <header class="header">
-            <a href="signin.blade.php" class="nexora-logo" id="headerLogoBtn">
+            <a href="{{ route('signin') }}" class="nexora-logo" id="headerLogoBtn">
                 <img src="images/Banner Transparent.png" alt="Nexora Logo">
             </a>
             
-            <a href="{{ route('contactus') }}" class="header-contact-btn" id='contactBtn'>Contact Us</a>
+            <a href="{{ route('signin') }}" class="header-contact-btn" id="contactBtn">Contact Us</a>
         </header>
         
         <!-- Main Area (Image Container) -->
@@ -246,11 +246,13 @@
     const SPLASH_DURATION = 4300;
     const splash = document.getElementById("splash");
 
-    // 1. Hide splash screen after initial load
-    setTimeout(() => {
+    function dismissSplash() {
         splash.style.opacity = "0";
         splash.style.pointerEvents = "none";
-    }, SPLASH_DURATION);
+    }
+
+    setTimeout(dismissSplash, SPLASH_DURATION);
+    splash.addEventListener("click", dismissSplash);
 
     // 2. Smooth, fast fade-out for exiting the page
     function smoothExit(e, url) {
@@ -284,7 +286,7 @@
     const headerLogoBtn = document.getElementById("headerLogoBtn");
 
     if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signin') }}"));
-    if (contactBtn) contactBtn.addEventListener("click", (e) => { e.preventDefault(); window.location.reload(); });
+    if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signin') }}"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signin') }}"));
 </script>
 
