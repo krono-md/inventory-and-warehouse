@@ -8,6 +8,7 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockLevelController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\StockReceivingController;
+use App\Http\Controllers\StockTransferController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,3 +57,9 @@ Route::patch('/notifications/{notification}/resolve', [NotificationController::c
 
 // Stock Receiving
 Route::get('/stock-receiving', [StockReceivingController::class, 'index'])->name('stock-receiving');
+
+// Stock Transfers
+Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers');
+Route::post('/stock-transfers', [StockTransferController::class, 'store'])->name('stock-transfers.store');
+Route::patch('/stock-transfers/{transfer}/approve', [StockTransferController::class, 'approve'])->name('stock-transfers.approve');
+Route::patch('/stock-transfers/{transfer}/reject', [StockTransferController::class, 'reject'])->name('stock-transfers.reject');

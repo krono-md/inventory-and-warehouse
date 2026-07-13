@@ -118,8 +118,10 @@
                                     <span style="display:inline-block;padding:4px 16px;border-radius:14px;background:#FFF5F5;color:#DC2626;border:1px solid rgba(220,38,38,0.5);font-size:12px;font-weight:500;">Outbound</span>
                                 @elseif ($movement['type'] === 'adjustment')
                                     <span style="display:inline-block;padding:4px 16px;border-radius:14px;background:#FEF3C7;color:#D97706;border:1px solid rgba(217,119,6,0.5);font-size:12px;font-weight:500;">Adjustment</span>
-                                @else
+                                @elseif ($movement['type'] === 'transfer')
                                     <span style="display:inline-block;padding:4px 16px;border-radius:14px;background:#EFF6FF;color:#2563EB;border:1px solid rgba(37,99,235,0.5);font-size:12px;font-weight:500;">Transfer</span>
+                                @else
+                                    <span style="display:inline-block;padding:4px 16px;border-radius:14px;background:#E2E8F0;color:#64748B;border:1px solid rgba(100,116,139,0.5);font-size:12px;font-weight:500;">Other</span>
                                 @endif
                             </td>
                             <td style="text-align: center; padding: 12px 8px; color: #000000; font-size:13px;">{{ $movement['item_name'] }}</td>
@@ -147,9 +149,13 @@
                                             {{ number_format($movement['quantity']) }}
                                         </span>
                                     @endif
-                                @else
+                                @elseif ($movement['type'] === 'transfer')
                                     <span style="display:inline-flex;align-items:center;gap:4px;color:#2563EB;">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8l4 4-4 4"/><path d="M7 16l-4-4 4-4"/></svg>
+                                        {{ number_format($movement['quantity']) }}
+                                    </span>
+                                @else
+                                    <span style="display:inline-flex;align-items:center;gap:4px;color:#64748B;">
                                         {{ number_format($movement['quantity']) }}
                                     </span>
                                 @endif
@@ -197,6 +203,12 @@
                     data: @json($trendData['adjustments']),
                     backgroundColor: '#8b5cf6',
                     borderRadius: 10,
+                },
+                {
+                    label: 'Transfer',
+                    data: @json($trendData['transfers']),
+                    backgroundColor: '#2563eb',
+                    borderRadius: 10,
                 }
             ]
         },
@@ -231,6 +243,7 @@
                 trendChart.data.datasets[0].data = data.inbound;
                 trendChart.data.datasets[1].data = data.outbound;
                 trendChart.data.datasets[2].data = data.adjustments;
+                trendChart.data.datasets[3].data = data.transfers;
                 trendChart.update();
             });
     });

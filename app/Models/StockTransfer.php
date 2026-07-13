@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class StockTransfer extends Model
+{
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+
+    protected $fillable = [
+        'item_id',
+        'from_warehouse_id',
+        'to_warehouse_id',
+        'quantity',
+        'status',
+        'requested_by',
+        'approved_by',
+        'approved_at',
+        'notes',
+    ];
+
+    protected $casts = [
+        'approved_at' => 'datetime',
+        'quantity' => 'integer',
+    ];
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function fromWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'from_warehouse_id');
+    }
+
+    public function toWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
+    }
+
+    public function getReferenceAttribute(): string
+    {
+        return 'TRF-' . str_pad((string) $this->id, 6, '0', STR_PAD_LEFT);
+    }
+}

@@ -112,6 +112,7 @@ class DashboardController extends Controller
         $inbound = [];
         $outbound = [];
         $adjustments = [];
+        $transfers = [];
 
         foreach ($days as $day) {
             $labels[] = $day->format('M d');
@@ -119,6 +120,9 @@ class DashboardController extends Controller
             $inbound[] = $dayMovements->whereIn('type', ['inbound'])->sum('quantity');
             $outbound[] = $dayMovements->whereIn('type', ['outbound'])->sum('quantity');
             $adjustments[] = $dayMovements->whereIn('type', ['adjustment'])->sum('quantity');
+            $dayTransferMovements = $dayMovements->where('type', 'transfer');
+            $dayTransferRefs = $dayTransferMovements->groupBy('reference');
+            $transfers[] = $dayTransferRefs->reduce(fn ($carry, $group) => $carry + $group->first()->quantity, 0);
         }
 
         return [
@@ -126,6 +130,7 @@ class DashboardController extends Controller
             'inbound' => $inbound,
             'outbound' => $outbound,
             'adjustments' => $adjustments,
+            'transfers' => $transfers,
         ];
     }
 }
