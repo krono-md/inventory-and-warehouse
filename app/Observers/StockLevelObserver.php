@@ -9,7 +9,7 @@ class StockLevelObserver
 {
     public function updated(StockLevel $stockLevel): void
     {
-        if (!$stockLevel->wasChanged('quantity_on_hand')) {
+        if (!$stockLevel->wasChanged('quantity_on_hand') && !$stockLevel->wasChanged('reorder_threshold')) {
             return;
         }
 
