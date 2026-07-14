@@ -49,10 +49,16 @@ class StockAdjustmentController extends Controller
         $increaseCount = StockAdjustment::where('type', 'increase')->count();
         $pendingCount = StockAdjustment::where('status', 'pending')->count();
 
+        $itemsByWarehouse = StockLevel::with('item')
+            ->get()
+            ->groupBy('warehouse_id')
+            ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+
         return view('stock-adjustments', [
             'adjustments' => $adjustments,
             'warehouses' => Warehouse::all(),
             'items' => Item::all(),
+            'itemsByWarehouse' => $itemsByWarehouse,
             'filters' => $request->only(['search', 'type', 'reason', 'warehouse', 'status']),
             'totalCount' => $totalCount,
             'increaseCount' => $increaseCount,

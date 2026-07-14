@@ -43,10 +43,17 @@ class StockTransferController extends Controller
         $pendingCount = StockTransfer::where('status', 'pending')->count();
         $approvedCount = StockTransfer::where('status', 'approved')->count();
 
+        $itemsByWarehouse = StockLevel::with('item')
+            ->where('quantity_on_hand', '>', 0)
+            ->get()
+            ->groupBy('warehouse_id')
+            ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+
         return view('stock-transfers', [
             'transfers' => $transfers,
             'warehouses' => Warehouse::all(),
             'items' => Item::all(),
+            'itemsByWarehouse' => $itemsByWarehouse,
             'filters' => $request->only(['search', 'status', 'from_warehouse', 'to_warehouse']),
             'totalCount' => $totalCount,
             'pendingCount' => $pendingCount,

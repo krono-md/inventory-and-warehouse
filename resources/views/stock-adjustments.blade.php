@@ -164,25 +164,25 @@
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                     <div>
-                        <label class="form-label">Item</label>
-                        <select name="item_id" class="form-input" required>
-                            <option value="">Select Item</option>
-                            @foreach ($items as $item)
-                                <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }} ({{ $item->sku }})</option>
-                            @endforeach
-                        </select>
-                        @error('item_id')<p class="form-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
                         <label class="form-label">Warehouse</label>
-                        <select name="warehouse_id" class="form-input" required>
+                        <select name="warehouse_id" id="warehouse_id" class="form-input" required>
                             <option value="">Select Warehouse</option>
                             @foreach ($warehouses as $wh)
                                 <option value="{{ $wh->id }}" {{ old('warehouse_id') == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
                             @endforeach
                         </select>
                         @error('warehouse_id')<p class="form-error">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="form-label">Item</label>
+                        <select name="item_id" id="item_id" class="form-input" required>
+                            <option value="">Select Warehouse First</option>
+                            @foreach ($items as $item)
+                                <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }} ({{ $item->sku }})</option>
+                            @endforeach
+                        </select>
+                        @error('item_id')<p class="form-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
@@ -239,5 +239,43 @@
     @if($errors->any())
         openAdjustmentModal();
     @endif
+
+    const itemsByWarehouse = @json($itemsByWarehouse);
+    const allItems = @json($items);
+    const warehouseSelect = document.getElementById('warehouse_id');
+    const itemSelect = document.getElementById('item_id');
+
+    function filterItemsByWarehouse() {
+        const warehouseId = warehouseSelect.value;
+        const currentItemId = itemSelect.value;
+
+        itemSelect.innerHTML = '<option value="">Select Item</option>';
+
+        let availableItems = [];
+        if (warehouseId && itemsByWarehouse[warehouseId]) {
+            availableItems = itemsByWarehouse[warehouseId];
+        } else if (!warehouseId) {
+            availableItems = allItems;
+        }
+
+        availableItems.forEach(function(item) {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.name + ' (' + item.sku + ')';
+            if (String(item.id) === currentItemId) {
+                option.selected = true;
+            }
+            itemSelect.appendChild(option);
+        });
+
+        if (warehouseId && availableItems.length === 0) {
+            itemSelect.innerHTML = '<option value="">No items in this warehouse</option>';
+        }
+    }
+
+    warehouseSelect.addEventListener('change', filterItemsByWarehouse);
+
+    // Run once on load in case old() has a value selected
+    filterItemsByWarehouse();
 </script>
 @endpush
