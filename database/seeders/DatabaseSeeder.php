@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::create($user);
+            User::firstOrCreate(['username' => $user['username']], $user);
         }
     }
 
@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create($cat);
+            Category::firstOrCreate($cat);
         }
     }
 
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($warehouses as $w) {
-            Warehouse::create($w);
+            Warehouse::firstOrCreate(['name' => $w['name']], $w);
         }
     }
 
@@ -85,17 +85,25 @@ class DatabaseSeeder extends Seeder
 
         foreach ($items as $item) {
             $categoryId = Category::where('name', $item['category'])->value('id');
-            Item::create([
-                'sku' => $item['sku'],
-                'name' => $item['name'],
-                'category_id' => $categoryId,
-                'unit_cost' => $item['unit_cost'],
-            ]);
+            Item::firstOrCreate(
+                ['sku' => $item['sku']],
+                [
+                    'name' => $item['name'],
+                    'category_id' => $categoryId,
+                    'unit_cost' => $item['unit_cost'],
+                ]
+            );
         }
     }
 
     private function seedStockData(): void
     {
+        // Skip if stock levels were already seeded
+        if (StockLevel::count() > 0) {
+            return;
+        }
+
+
         $thresholds = [7, 10, 7, 14, 10, 14, 7, 14, 10, 14];
 
         $warehouseItems = [
