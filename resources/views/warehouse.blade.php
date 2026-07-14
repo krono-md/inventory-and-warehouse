@@ -13,12 +13,8 @@
     /* Modal transition */
     #addWarehouseModal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
     #addWarehouseModal.open { opacity: 1; pointer-events: auto; }
-
-    /* Form input base */
-    .form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #0f172a; font-family: 'Inter', sans-serif; outline: none; }
-    .form-input:focus { border-color: #1b6fc8; }
-    .form-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
-    .form-error { color: #ef4444; font-size: 11px; margin-top: 4px; }
+    #editWarehouseModal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+    #editWarehouseModal.open { opacity: 1; pointer-events: auto; }
 </style>
 @endpush
 
@@ -112,71 +108,72 @@
     </div>
 
     <!-- Add Warehouse Modal -->
-    <div id="addWarehouseModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:720px;margin:16px;box-shadow:0 10px 30px rgba(0,0,0,0.4);color:#0f172a;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-                <h2 style="font-size:20px;font-weight:700;">Add New Warehouse</h2>
-                <button onclick="closeModal()" style="background:transparent;border:none;color:#64748b;cursor:pointer;font-size:24px;line-height:1;">&times;</button>
+    <div id="addWarehouseModal" class="nexora-modal-overlay" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
+        <div class="nexora-modal">
+            <div class="nexora-modal-logo"></div>
+            <div class="nexora-modal-header">
+                <h2 class="nexora-modal-title">Add New Warehouse</h2>
+                <button type="button" onclick="closeModal()" class="nexora-modal-close">&times;</button>
             </div>
 
             <form id="addWarehouseForm" method="POST" action="{{ route('warehouse.store') }}" novalidate>
                 @csrf
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="nexora-modal-form">
                     <div>
-                        <label class="form-label">Warehouse Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" class="form-input" placeholder="e.g. Dasma Main Warehouse" required>
-                        @error('name')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">Warehouse Name</label>
+                        <input type="text" name="name" value="{{ old('name') }}" class="nexora-modal-input" placeholder="e.g. Dasma Main Warehouse" required>
+                        @error('name')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Capacity (Units)</label>
-                        <input type="number" name="capacity_units" value="{{ old('capacity_units') }}" min="1" class="form-input" placeholder="e.g. 1000" required>
-                        @error('capacity_units')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">Capacity (Units)</label>
+                        <input type="number" name="capacity_units" value="{{ old('capacity_units') }}" min="1" class="nexora-modal-input" placeholder="e.g. 1000" required>
+                        @error('capacity_units')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Province</label>
-                        <input type="text" name="province" value="{{ old('province') }}" class="form-input" placeholder="e.g. Cavite" required>
-                        @error('province')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">Province</label>
+                        <input type="text" name="province" value="{{ old('province') }}" class="nexora-modal-input" placeholder="e.g. Cavite" required>
+                        @error('province')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">City / Municipality</label>
-                        <input type="text" name="city" value="{{ old('city') }}" class="form-input" placeholder="e.g. Dasmariñas" required>
-                        @error('city')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">City / Municipality</label>
+                        <input type="text" name="city" value="{{ old('city') }}" class="nexora-modal-input" placeholder="e.g. Dasmariñas" required>
+                        @error('city')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Address</label>
-                        <input type="text" name="address_description" value="{{ old('address_description') }}" class="form-input" placeholder="e.g. Blk 5 Lot 12, near covered court" required>
-                        @error('address_description')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">Address</label>
+                        <input type="text" name="address_description" value="{{ old('address_description') }}" class="nexora-modal-input" placeholder="e.g. Blk 5 Lot 12, near covered court" required>
+                        @error('address_description')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Country</label>
-                        <input type="text" value="Philippines" class="form-input" disabled style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
+                        <label class="nexora-modal-label">Country</label>
+                        <input type="text" value="Philippines" class="nexora-modal-input" disabled>
                     </div>
 
                     <div>
-                        <label class="form-label">Status</label>
-                        <select name="status" class="form-input" required>
+                        <label class="nexora-modal-label">Status</label>
+                        <select name="status" class="nexora-modal-select" required>
                             <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
-                        @error('status')<p class="form-error">{{ $message }}</p>@enderror
+                        @error('status')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Barangay</label>
-                        <input type="text" name="barangay" value="{{ old('barangay') }}" class="form-input" placeholder="e.g. Salawag" required>
-                        @error('barangay')<p class="form-error">{{ $message }}</p>@enderror
+                        <label class="nexora-modal-label">Barangay</label>
+                        <input type="text" name="barangay" value="{{ old('barangay') }}" class="nexora-modal-input" placeholder="e.g. Salawag" required>
+                        @error('barangay')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
-                    <button type="button" onclick="closeModal()" style="background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;">Cancel</button>
-                    <button type="submit" id="submitWarehouseBtn" style="background:#fff;color:#1b6fc8;border:1px solid #1b6fc8;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                <div class="nexora-modal-actions">
+                    <button type="button" onclick="closeModal()" class="nexora-modal-btn-secondary">Cancel</button>
+                    <button type="submit" id="submitWarehouseBtn" class="nexora-modal-btn-primary">
                         <span>Add Warehouse</span>
                         <svg id="submitSpinner" style="display:none;" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -187,58 +184,59 @@
         </div>
     </div>
     <!-- Edit Warehouse Modal -->
-    <div id="editWarehouseModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s ease;">
-        <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:720px;margin:16px;box-shadow:0 10px 30px rgba(0,0,0,0.4);color:#0f172a;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-                <h2 style="font-size:20px;font-weight:700;">Edit Warehouse</h2>
-                <button onclick="closeEditModal()" style="background:transparent;border:none;color:#64748b;cursor:pointer;font-size:24px;line-height:1;">&times;</button>
+    <div id="editWarehouseModal" class="nexora-modal-overlay" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
+        <div class="nexora-modal">
+            <div class="nexora-modal-logo"></div>
+            <div class="nexora-modal-header">
+                <h2 class="nexora-modal-title">Edit Warehouse</h2>
+                <button type="button" onclick="closeEditModal()" class="nexora-modal-close">&times;</button>
             </div>
 
             <form id="editWarehouseForm" method="POST" novalidate>
                 @csrf
                 @method('PATCH')
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="nexora-modal-form">
                     <div>
-                        <label class="form-label">Warehouse Name</label>
-                        <input type="text" name="name" id="edit_name" class="form-input" required>
+                        <label class="nexora-modal-label">Warehouse Name</label>
+                        <input type="text" name="name" id="edit_name" class="nexora-modal-input" required>
                     </div>
                     <div>
-                        <label class="form-label">Capacity (Units)</label>
-                        <input type="number" name="capacity_units" id="edit_capacity_units" min="1" class="form-input" required>
+                        <label class="nexora-modal-label">Capacity (Units)</label>
+                        <input type="number" name="capacity_units" id="edit_capacity_units" min="1" class="nexora-modal-input" required>
                     </div>
                     <div>
-                        <label class="form-label">Province</label>
-                        <input type="text" name="province" id="edit_province" class="form-input" required>
+                        <label class="nexora-modal-label">Province</label>
+                        <input type="text" name="province" id="edit_province" class="nexora-modal-input" required>
                     </div>
                     <div>
-                        <label class="form-label">City / Municipality</label>
-                        <input type="text" name="city" id="edit_city" class="form-input" required>
+                        <label class="nexora-modal-label">City / Municipality</label>
+                        <input type="text" name="city" id="edit_city" class="nexora-modal-input" required>
                     </div>
                     <div>
-                        <label class="form-label">Address</label>
-                        <input type="text" name="address_description" id="edit_address" class="form-input">
+                        <label class="nexora-modal-label">Address</label>
+                        <input type="text" name="address_description" id="edit_address" class="nexora-modal-input">
                     </div>
                     <div>
-                        <label class="form-label">Country</label>
-                        <input type="text" value="Philippines" class="form-input" disabled style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
+                        <label class="nexora-modal-label">Country</label>
+                        <input type="text" value="Philippines" class="nexora-modal-input" disabled>
                     </div>
                     <div>
-                        <label class="form-label">Status</label>
-                        <select name="status" id="edit_status" class="form-input" required>
+                        <label class="nexora-modal-label">Status</label>
+                        <select name="status" id="edit_status" class="nexora-modal-select" required>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
                     </div>
                     <div>
-                        <label class="form-label">Barangay</label>
-                        <input type="text" name="barangay" id="edit_barangay" class="form-input">
+                        <label class="nexora-modal-label">Barangay</label>
+                        <input type="text" name="barangay" id="edit_barangay" class="nexora-modal-input">
                     </div>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
-                    <button type="button" onclick="closeEditModal()" style="background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#1b6fc8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;">Save Changes</button>
+                <div class="nexora-modal-actions">
+                    <button type="button" onclick="closeEditModal()" class="nexora-modal-btn-secondary">Cancel</button>
+                    <button type="submit" class="nexora-modal-btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>

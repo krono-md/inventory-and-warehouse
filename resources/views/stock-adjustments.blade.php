@@ -12,10 +12,6 @@
     #adjustmentModal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
     #adjustmentModal.open { opacity: 1; pointer-events: auto; }
 
-    .form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #0f172a; font-family: 'Inter', sans-serif; outline: none; }
-    .form-input:focus { border-color: #1b6fc8; }
-    .form-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
-    .form-error { color: #ef4444; font-size: 11px; margin-top: 4px; }
 </style>
 @endpush
 
@@ -152,58 +148,53 @@
         </div>
         {{ $adjustments->links() }}
     </div>
-    <div id="adjustmentModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:560px;margin:16px;box-shadow:0 10px 30px rgba(0,0,0,0.4);color:#0f172a;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-                <h2 style="font-size:20px;font-weight:700;">New Stock Adjustment</h2>
-                <button onclick="closeAdjustmentModal()" style="background:transparent;border:none;color:#64748b;cursor:pointer;font-size:24px;line-height:1;">&times;</button>
+    <div id="adjustmentModal" class="nexora-modal-overlay" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
+        <div class="nexora-modal">
+            <div class="nexora-modal-logo"></div>
+            <div class="nexora-modal-header">
+                <h2 class="nexora-modal-title">New Stock Adjustment</h2>
+                <button type="button" onclick="closeAdjustmentModal()" class="nexora-modal-close">&times;</button>
             </div>
 
             <form method="POST" action="{{ route('stock-adjustments.store') }}" novalidate>
                 @csrf
 
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="nexora-modal-form">
                     <div>
-                        <label class="form-label">Warehouse</label>
-                        <select name="warehouse_id" id="warehouse_id" class="form-input" required>
+                        <label class="nexora-modal-label">Warehouse</label>
+                        <select name="warehouse_id" id="warehouse_id" class="nexora-modal-select" required>
                             <option value="">Select Warehouse</option>
                             @foreach ($warehouses as $wh)
                                 <option value="{{ $wh->id }}" {{ old('warehouse_id') == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
                             @endforeach
                         </select>
-                        @error('warehouse_id')<p class="form-error">{{ $message }}</p>@enderror
+                        @error('warehouse_id')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Item</label>
-                        <select name="item_id" id="item_id" class="form-input" required>
+                        <label class="nexora-modal-label">Item</label>
+                        <select name="item_id" id="item_id" class="nexora-modal-select" required>
                             <option value="">Select Warehouse First</option>
                             @foreach ($items as $item)
                                 <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }} ({{ $item->sku }})</option>
                             @endforeach
                         </select>
-                        @error('item_id')<p class="form-error">{{ $message }}</p>@enderror
+                        @error('item_id')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Type</label>
-                        <select name="type" class="form-input" required>
+                        <label class="nexora-modal-label">Type</label>
+                        <select name="type" class="nexora-modal-select" required>
                             <option value="">Select Type</option>
                             <option value="increase" {{ old('type') === 'increase' ? 'selected' : '' }}>Increase</option>
                             <option value="decrease" {{ old('type') === 'decrease' ? 'selected' : '' }}>Decrease</option>
                         </select>
-                        @error('type')<p class="form-error">{{ $message }}</p>@enderror
+                        @error('type')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Quantity</label>
-                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" class="form-input" placeholder="e.g. 50" required>
-                        @error('quantity')<p class="form-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="form-label">Reason</label>
-                        <select name="reason" class="form-input" required>
+                        <label class="nexora-modal-label">Reason</label>
+                        <select name="reason" class="nexora-modal-select" required>
                             <option value="">Select Reason</option>
                             <option value="damage" {{ old('reason') === 'damage' ? 'selected' : '' }}>Damage</option>
                             <option value="expired" {{ old('reason') === 'expired' ? 'selected' : '' }}>Expired</option>
@@ -211,18 +202,24 @@
                             <option value="theft" {{ old('reason') === 'theft' ? 'selected' : '' }}>Theft</option>
                             <option value="correction" {{ old('reason') === 'correction' ? 'selected' : '' }}>Correction</option>
                         </select>
-                        @error('reason')<p class="form-error">{{ $message }}</p>@enderror
+                        @error('reason')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="form-label">Notes (optional)</label>
-                        <input type="text" name="notes" value="{{ old('notes') }}" class="form-input" placeholder="Additional details...">
+                        <label class="nexora-modal-label">Quantity</label>
+                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" class="nexora-modal-input" placeholder="e.g. 50" required>
+                        @error('quantity')<p class="nexora-modal-error">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="nexora-modal-label">Notes (optional)</label>
+                        <input type="text" name="notes" value="{{ old('notes') }}" class="nexora-modal-input" placeholder="Additional details...">
                     </div>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
-                    <button type="button" onclick="closeAdjustmentModal()" style="background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#1b6fc8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;">Submit Adjustment</button>
+                <div class="nexora-modal-actions">
+                    <button type="button" onclick="closeAdjustmentModal()" class="nexora-modal-btn-secondary">Cancel</button>
+                    <button type="submit" class="nexora-modal-btn-primary">Submit Adjustment</button>
                 </div>
             </form>
         </div>
