@@ -14,6 +14,15 @@
     tr.trow { border-bottom: 1px solid rgba(255,255,255,0.06); cursor: default; }
     tr.trow:last-child { border-bottom: none; }
     tr.trow:hover { background: rgba(255,255,255,0.04); }
+
+    /* Fade-in transition when landing on dashboard after login */
+    .responsive-grid-dashboard {
+        animation: dashboardFadeIn 0.6s ease-out;
+    }
+    @keyframes dashboardFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 @endpush
 

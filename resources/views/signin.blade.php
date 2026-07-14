@@ -259,6 +259,14 @@
             color: #1B6FC8;
         }
     </style>
+
+    @if ($errors->any())
+    <style>
+        #splash { display: none !important; }
+        .main-wrapper { opacity: 1 !important; animation: none !important; transform: none !important; }
+        .circle, .brand .logo, .brand .banner { animation: none !important; }
+    </style>
+    @endif
 </head>
 
 <body>
@@ -360,6 +368,7 @@
     if (signInBtn) signInBtn.addEventListener("click", (e) => {
         localStorage.removeItem('stockSubmenuState');
     });
+
     if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('index') }}"));
 </script>
