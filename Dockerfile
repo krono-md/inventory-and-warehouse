@@ -24,10 +24,15 @@ WORKDIR /app
 
 COPY . .
 
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+
 RUN composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 RUN npm install && npm run build
 
+RUN php artisan config:clear
+
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]
+CMD ["sh", "-c", "php artisan config:cache && php -S 0.0.0.0:$PORT -t public/"]
