@@ -142,7 +142,7 @@ class StockAdjustmentController extends Controller
                 'type' => 'adjustment',
                 'item_id' => $adjustment->item_id,
                 'warehouse_id' => $adjustment->warehouse_id,
-                'quantity' => $adjustment->quantity,
+                'quantity' => $adjustment->type === 'decrease' ? -$adjustment->quantity : $adjustment->quantity,
                 'reference' => 'ADJ-' . str_pad($adjustment->id, 6, '0', STR_PAD_LEFT),
                 'notes' => "Adjustment #{$adjustment->id} approved: {$adjustment->type} ({$adjustment->reason})",
                 'created_at' => now(),

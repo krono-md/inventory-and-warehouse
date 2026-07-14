@@ -40,11 +40,7 @@ class StockMovementController extends Controller
         $totals = [
             'inbound' => StockMovement::where('type', 'inbound')->sum('quantity'),
             'outbound' => StockMovement::where('type', 'outbound')->sum('quantity'),
-            'transfer' => StockMovement::where('type', 'transfer')
-                ->selectRaw('reference, MAX(quantity) as qty')
-                ->groupBy('reference')
-                ->get()
-                ->sum('qty'),
+            'transfer' => StockMovement::where('type', 'transfer')->sum('quantity'),
             'adjustment' => StockMovement::where('type', 'adjustment')->sum('quantity'),
         ];
         $totals['net'] = $totals['inbound'] - $totals['outbound'] + $totals['adjustment'];

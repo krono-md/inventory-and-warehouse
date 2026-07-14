@@ -120,9 +120,7 @@ class DashboardController extends Controller
             $inbound[] = $dayMovements->whereIn('type', ['inbound'])->sum('quantity');
             $outbound[] = $dayMovements->whereIn('type', ['outbound'])->sum('quantity');
             $adjustments[] = $dayMovements->whereIn('type', ['adjustment'])->sum('quantity');
-            $dayTransferMovements = $dayMovements->where('type', 'transfer');
-            $dayTransferRefs = $dayTransferMovements->groupBy('reference');
-            $transfers[] = $dayTransferRefs->reduce(fn ($carry, $group) => $carry + $group->first()->quantity, 0);
+            $transfers[] = $dayMovements->where('type', 'transfer')->sum('quantity');
         }
 
         return [

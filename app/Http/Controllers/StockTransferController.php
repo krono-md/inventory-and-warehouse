@@ -144,16 +144,6 @@ class StockTransferController extends Controller
                 'created_at' => $now,
             ]);
 
-            StockMovement::create([
-                'type' => 'transfer',
-                'item_id' => $transfer->item_id,
-                'warehouse_id' => $transfer->to_warehouse_id,
-                'quantity' => $transfer->quantity,
-                'reference' => $reference,
-                'notes' => "Transfer #{$transfer->id} from {$transfer->fromWarehouse->name} to {$transfer->toWarehouse->name}",
-                'created_at' => $now,
-            ]);
-
             $transfer->update([
                 'status' => 'approved',
                 'approved_by' => 'System',

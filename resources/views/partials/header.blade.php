@@ -58,13 +58,13 @@
     <!-- Profile Dropdown -->
     <div id="profileDropdown" class="profile-dropdown">
         <button type="button" class="profile-dropdown-close" onclick="toggleProfileDropdown()">&times;</button>
-        <div class="profile-dropdown-email">user@gmail.com</div>
+        <div class="profile-dropdown-email">{{ Auth::user()->email ?? '' }}</div>
         <div class="profile-dropdown-avatar-wrap">
             <div class="profile-dropdown-avatar">
                 <img src="{{ asset('images/avatar.png') }}" alt="User avatar">
             </div>
         </div>
-        <div class="profile-dropdown-greeting">Hi, User!</div>
+        <div class="profile-dropdown-greeting">Hi, {{ Auth::user()->name ?? 'User' }}!</div>
         <ul class="profile-dropdown-menu">
             <li>
                 <a href="#">
@@ -84,12 +84,15 @@
                 </a>
             </li>
             <li class="logout">
-                <a href="{{ route('signin') }}">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
-                </a>
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;padding:0;">
+                    @csrf
+                    <button type="submit">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </button>
+                </form>
             </li>
         </ul>
     </div>

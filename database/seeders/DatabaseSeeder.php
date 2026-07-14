@@ -7,18 +7,34 @@ use App\Models\Item;
 use App\Models\StockAdjustment;
 use App\Models\StockLevel;
 use App\Models\StockMovement;
+use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->seedUsers();
         $this->seedCategories();
         $this->seedWarehouses();
         $this->seedItems();
         $this->seedStockData();
+    }
+
+    private function seedUsers(): void
+    {
+        $users = [
+            ['username' => 'admin',   'password' => Hash::make('password'), 'name' => 'Admin',   'email' => 'admin@nexora.com'],
+            ['username' => 'manager', 'password' => Hash::make('password'), 'name' => 'Manager', 'email' => 'manager@nexora.com'],
+            ['username' => 'staff',   'password' => Hash::make('password'), 'name' => 'Staff',   'email' => 'staff@nexora.com'],
+        ];
+
+        foreach ($users as $user) {
+            User::create($user);
+        }
     }
 
     private function seedCategories(): void

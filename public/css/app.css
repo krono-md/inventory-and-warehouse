@@ -709,7 +709,19 @@
   margin: 0;
 }
 
-.profile-dropdown-menu li a {
+.profile-dropdown-menu li.logout form {
+  margin: 0;
+  padding: 0;
+}
+
+.profile-dropdown-menu li.logout button {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.profile-dropdown-menu li a,
+.profile-dropdown-menu li.logout button {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -719,24 +731,30 @@
   text-decoration: none;
   font-size: 14px;
   transition: background 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.profile-dropdown-menu li a:hover {
+.profile-dropdown-menu li a:hover,
+.profile-dropdown-menu li.logout button:hover {
   background: rgba(26, 115, 232, 0.08);
 }
 
-.profile-dropdown-menu li a svg {
+.profile-dropdown-menu li a svg,
+.profile-dropdown-menu li.logout button svg {
   width: 18px;
   height: 18px;
   color: #5f6368;
   flex-shrink: 0;
 }
 
-.profile-dropdown-menu li.logout a svg {
+.profile-dropdown-menu li.logout a svg,
+.profile-dropdown-menu li.logout button svg {
   color: #d93025;
 }
 
-.profile-dropdown-menu li.logout a {
+.profile-dropdown-menu li.logout a,
+.profile-dropdown-menu li.logout button {
   color: #d93025;
 }
 

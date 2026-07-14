@@ -283,12 +283,18 @@
             <div class="form-col">
                 <div class="login-card">
                     <h1>Sign In</h1>
-                    
+
+                    @if ($errors->any())
+                        <div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:4px;padding:12px 16px;margin-bottom:20px;color:#991B1B;font-size:13px;">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('signin.authenticate') }}">
                         @csrf
                         <div class="input-group">
                             <label for="username">Username</label>
-                            <input id="username" name="username" type="text" placeholder="Enter Username" required>
+                            <input id="username" name="username" type="text" placeholder="Enter Username" value="{{ old('username') }}" required>
                         </div>
                         
                         <div class="input-group">
