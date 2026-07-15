@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
     Route::patch('/stock-adjustments/{adjustment}/approve', [StockAdjustmentController::class, 'approve'])->name('stock-adjustments.approve');
     Route::patch('/stock-adjustments/{adjustment}/reject', [StockAdjustmentController::class, 'reject'])->name('stock-adjustments.reject');
+    Route::patch('/stock-adjustments/{adjustment}/cancel', [StockAdjustmentController::class, 'cancel'])->name('stock-adjustments.cancel');
 
     // Warehouse
     Route::get('/warehouse', [WarehouseController::class, 'index'])->name('warehouse');
@@ -65,4 +66,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock-transfers', [StockTransferController::class, 'store'])->name('stock-transfers.store');
     Route::patch('/stock-transfers/{transfer}/approve', [StockTransferController::class, 'approve'])->name('stock-transfers.approve');
     Route::patch('/stock-transfers/{transfer}/reject', [StockTransferController::class, 'reject'])->name('stock-transfers.reject');
+    Route::patch('/stock-transfers/{transfer}/cancel', [StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
 });

@@ -14,6 +14,7 @@ class Notification extends Model
         'triggered_by',
         'status',
         'resolved_at',
+        'resolved_by',
     ];
 
     protected $casts = [
@@ -28,5 +29,10 @@ class Notification extends Model
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function resolver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
     }
 }

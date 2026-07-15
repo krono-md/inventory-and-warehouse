@@ -127,7 +127,7 @@
                             </td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->warehouse?->name ?? 'N/A' }}</td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->reference ?? '-' }}</td>
-                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">System</td>
+                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->performer?->username ?? $movement->performer?->name ?? 'System' }}</td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->created_at->format('M d, Y h:i A') }}</td>
                         </tr>
                     @empty

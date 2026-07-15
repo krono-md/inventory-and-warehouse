@@ -33,4 +33,14 @@ class StockAdjustment extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 }

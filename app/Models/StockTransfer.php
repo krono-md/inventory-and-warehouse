@@ -18,6 +18,7 @@ class StockTransfer extends Model
         'quantity',
         'status',
         'requested_by',
+        'requested_by_user_id',
         'approved_by',
         'approved_at',
         'notes',
@@ -41,6 +42,16 @@ class StockTransfer extends Model
     public function toWarehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
     }
 
     public function getReferenceAttribute(): string

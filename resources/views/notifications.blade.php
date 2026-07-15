@@ -78,6 +78,7 @@
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TRIGGERED BY</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">STATUS</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">DATE</th>
+                        <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">RESOLVED BY</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ACTIONS</th>
                     </tr>
                 </thead>
@@ -95,6 +96,7 @@
                                 <span class="status-badge status-{{ $notification->status }}">{{ ucfirst($notification->status) }}</span>
                             </td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $notification->created_at->format('M d, Y') }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $notification->resolver?->name ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @if($notification->status === 'open')
                                     <form method="POST" action="{{ route('notifications.acknowledge', $notification) }}" style="display:inline;">
@@ -115,7 +117,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No notifications found.</td>
+                            <td colspan="9" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No notifications found.</td>
                         </tr>
                     @endforelse
                 </tbody>

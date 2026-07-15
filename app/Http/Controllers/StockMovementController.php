@@ -10,7 +10,7 @@ class StockMovementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = StockMovement::with(['item', 'warehouse'])->orderByDesc('created_at');
+        $query = StockMovement::with(['item', 'warehouse', 'performer'])->orderByDesc('created_at');
 
         if ($type = $request->input('type')) {
             $query->where('type', $type);

@@ -8,6 +8,7 @@ use App\Models\StockMovement;
 use App\Models\StockTransfer;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +16,7 @@ class StockTransferController extends Controller
 {
     public function index(Request $request)
     {
-        $query = StockTransfer::with(['item', 'fromWarehouse', 'toWarehouse']);
+        $query = StockTransfer::with(['item', 'fromWarehouse', 'toWarehouse', 'approver', 'requester']);
 
         if ($status = $request->input('status')) {
             $query->where('status', $status);
@@ -73,7 +74,8 @@ class StockTransferController extends Controller
         ]);
 
         $validated['status'] = 'pending';
-        $validated['requested_by'] = 'System';
+        $validated['requested_by'] = Auth::id();
+        $validated['requested_by_user_id'] = Auth::id();
 
         StockTransfer::create($validated);
 
@@ -84,6 +86,10 @@ class StockTransferController extends Controller
     {
         if ($transfer->status !== 'pending') {
             return back()->with('error', 'This transfer has already been processed.');
+        }
+
+        if ($transfer->requested_by_user_id === Auth::id()) {
+            return back()->with('error', 'You cannot approve your own transfer request.');
         }
 
         $result = $this->executeApproval($transfer);
@@ -148,12 +154,24 @@ class StockTransferController extends Controller
                 'quantity' => $transfer->quantity,
                 'reference' => $reference,
                 'notes' => "Transfer #{$transfer->id} from {$transfer->fromWarehouse->name} to {$transfer->toWarehouse->name}",
+                'performed_by' => Auth::id(),
+                'created_at' => $now,
+            ]);
+
+            StockMovement::create([
+                'type' => 'transfer',
+                'item_id' => $transfer->item_id,
+                'warehouse_id' => $transfer->to_warehouse_id,
+                'quantity' => $transfer->quantity,
+                'reference' => $reference,
+                'notes' => "Transfer #{$transfer->id} from {$transfer->fromWarehouse->name} to {$transfer->toWarehouse->name}",
+                'performed_by' => Auth::id(),
                 'created_at' => $now,
             ]);
 
             $transfer->update([
                 'status' => 'approved',
-                'approved_by' => 'System',
+                'approved_by' => Auth::id(),
                 'approved_at' => $now,
             ]);
 
@@ -167,8 +185,27 @@ class StockTransferController extends Controller
             return back()->with('error', 'This transfer has already been processed.');
         }
 
+        if ($transfer->requested_by_user_id === Auth::id()) {
+            return back()->with('error', 'You cannot reject your own transfer request.');
+        }
+
         $transfer->update(['status' => 'rejected']);
 
         return back()->with('success', 'Transfer rejected.');
+    }
+
+    public function cancel(StockTransfer $transfer)
+    {
+        if ($transfer->status !== 'pending') {
+            return back()->with('error', 'Only pending transfers can be cancelled.');
+        }
+
+        if ($transfer->requested_by_user_id !== Auth::id()) {
+            return back()->with('error', 'You can only cancel your own transfer requests.');
+        }
+
+        $transfer->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'Transfer request cancelled.');
     }
 }

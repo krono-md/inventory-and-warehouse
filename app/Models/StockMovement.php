@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
 class StockMovement extends Model
 {
     public $timestamps = false;
@@ -33,5 +34,10 @@ class StockMovement extends Model
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function performer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'performed_by');
     }
 }

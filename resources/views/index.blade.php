@@ -144,18 +144,18 @@
                                 @elseif ($movement['type'] === 'outbound')
                                     <span style="display:inline-flex;align-items:center;gap:4px;color:#DC2626;">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
-                                        {{ number_format($movement['quantity']) }}
+                                        {{ number_format(abs($movement['quantity'])) }}
                                     </span>
                                 @elseif ($movement['type'] === 'adjustment')
                                     @if ($movement['quantity'] >= 0)
                                         <span style="display:inline-flex;align-items:center;gap:4px;color:#0CAE57;">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
-                                            {{ number_format($movement['quantity']) }}
+                                            {{ number_format(abs($movement['quantity'])) }}
                                         </span>
                                     @else
                                         <span style="display:inline-flex;align-items:center;gap:4px;color:#DC2626;">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
-                                            {{ number_format($movement['quantity']) }}
+                                            {{ number_format(abs($movement['quantity'])) }}
                                         </span>
                                     @endif
                                 @elseif ($movement['type'] === 'transfer')

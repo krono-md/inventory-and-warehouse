@@ -8,6 +8,7 @@
     .status-pending { background: #fef9c3; color: #854d0e; }
     .status-approved { background: #dcfce7; color: #166534; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
+    .status-cancelled { background: #e2e8f0; color: #475569; }
 
     #adjustmentModal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
     #adjustmentModal.open { opacity: 1; pointer-events: auto; }
@@ -34,8 +35,10 @@
             <p style="font-size:40px;font-weight:bold;color:#fff;">{{ $totalCount }}</p>
         </div>
         <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
-            <p style="font-size:15px;color:#94a3b8;">Total Increases</p>
-            <p style="font-size:40px;font-weight:bold;color:#fff;">{{ $increaseCount }}</p>
+            <p style="font-size:15px;color:#94a3b8;">Net Adjusted Units</p>
+            <p style="font-size:40px;font-weight:bold;color:{{ $netAdjustedUnits >= 0 ? '#22c55e' : '#ef4444' }};">
+                {{ ($netAdjustedUnits >= 0 ? '+' : '') . number_format($netAdjustedUnits) }}
+            </p>
         </div>
         <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
             <p style="font-size:15px;color:#94a3b8;">Pending Approval</p>
@@ -80,6 +83,7 @@
                 <option value="pending" {{ ($filters['status'] ?? '') === 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="approved" {{ ($filters['status'] ?? '') === 'approved' ? 'selected' : '' }}>Approved</option>
                 <option value="rejected" {{ ($filters['status'] ?? '') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="cancelled" {{ ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
             </select>
             <!-- + New Adjustment Button -->
             <button type="button" onclick="openAdjustmentModal()" style="background:#1b6fc8;color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;">
@@ -119,20 +123,29 @@
                             <td style="text-align:center;padding:12px 8px;">
                                 <span class="status-badge status-{{ $adjustment->status }}">{{ ucfirst($adjustment->status) }}</span>
                             </td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->approved_by ?? '—' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->approver?->name ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->created_at->format('M d, Y') }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @if($adjustment->status === 'pending')
-                                    <form method="POST" action="{{ route('stock-adjustments.approve', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Approve this adjustment?')">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Approve</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('stock-adjustments.reject', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Reject this adjustment?')">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>
-                                    </form>
+                                    @if($adjustment->requested_by !== Auth::id())
+                                        <form method="POST" action="{{ route('stock-adjustments.approve', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Approve this adjustment?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Approve</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('stock-adjustments.reject', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Reject this adjustment?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>
+                                        </form>
+                                    @else
+                                        <span style="color:#94a3b8;font-size:12px;">Awaiting review</span>
+                                        <form method="POST" action="{{ route('stock-adjustments.cancel', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Cancel this adjustment request?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#475569;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Cancel</button>
+                                        </form>
+                                    @endif
                                 @else
                                     <span style="color:#94a3b8;font-size:12px;">—</span>
                                 @endif

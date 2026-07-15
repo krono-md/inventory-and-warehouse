@@ -214,6 +214,8 @@ class DatabaseSeeder extends Seeder
                 'quantity' => $adj['quantity'],
                 'reason' => $adj['reason'],
                 'status' => 'approved',
+                'requested_by' => 3,
+                'approved_by' => 2,
                 'approved_at' => Carbon::now()->subDays($adj['days_ago']),
                 'created_at' => Carbon::now()->subDays($adj['days_ago']),
                 'updated_at' => Carbon::now()->subDays($adj['days_ago']),
@@ -223,9 +225,10 @@ class DatabaseSeeder extends Seeder
                 'type' => 'adjustment',
                 'item_id' => $adj['item_id'],
                 'warehouse_id' => $adj['warehouse_id'],
-                'quantity' => $adj['quantity'],
+                'quantity' => $adj['type'] === 'increase' ? $adj['quantity'] : -$adj['quantity'],
                 'reference' => 'ADJ-' . str_pad($adjustment->id, 6, '0', STR_PAD_LEFT),
                 'notes' => "Adjustment #{$adjustment->id} approved: {$adj['type']} ({$adj['reason']})",
+                'performed_by' => $adj['approved_by'] ?? 2,
                 'created_at' => Carbon::now()->subDays($adj['days_ago']),
             ]);
         }
@@ -243,6 +246,7 @@ class DatabaseSeeder extends Seeder
                 'quantity' => $adj['quantity'],
                 'reason' => $adj['reason'],
                 'status' => 'pending',
+                'requested_by' => 3,
             ]);
         }
 

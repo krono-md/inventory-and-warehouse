@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Notification::with(['item', 'warehouse']);
+        $query = Notification::with(['item', 'warehouse', 'resolver']);
 
         if ($status = $request->input('status')) {
             $query->where('status', $status);
@@ -68,6 +69,7 @@ class NotificationController extends Controller
         $notification->update([
             'status' => 'resolved',
             'resolved_at' => now(),
+            'resolved_by' => Auth::id(),
         ]);
 
         return back()->with('success', 'Notification resolved.');

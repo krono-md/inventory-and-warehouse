@@ -8,6 +8,7 @@
     .status-pending { background: #fef9c3; color: #854d0e; }
     .status-approved { background: #dcfce7; color: #166534; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
+    .status-cancelled { background: #e2e8f0; color: #475569; }
 
     #transferModal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
     #transferModal.open { opacity: 1; pointer-events: auto; }
@@ -57,6 +58,7 @@
                 <option value="pending" {{ ($filters['status'] ?? '') === 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="approved" {{ ($filters['status'] ?? '') === 'approved' ? 'selected' : '' }}>Approved</option>
                 <option value="rejected" {{ ($filters['status'] ?? '') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="cancelled" {{ ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
             </select>
             <!-- Filter: From Warehouse -->
             <select name="from_warehouse" onchange="this.form.submit()" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
@@ -108,20 +110,29 @@
                             <td style="text-align:center;padding:12px 8px;">
                                 <span class="status-badge status-{{ $transfer->status }}">{{ ucfirst($transfer->status) }}</span>
                             </td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->approved_by ?? '—' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->approver?->username ?? $transfer->approver?->name ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->created_at->format('M d, Y') }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @if($transfer->status === 'pending')
-                                    <form method="POST" action="{{ route('stock-transfers.approve', $transfer) }}" style="display:inline;" onsubmit="return confirm('Approve this transfer?')">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Approve</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('stock-transfers.reject', $transfer) }}" style="display:inline;" onsubmit="return confirm('Reject this transfer?')">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>
-                                    </form>
+                                    @if($transfer->requested_by_user_id !== Auth::id())
+                                        <form method="POST" action="{{ route('stock-transfers.approve', $transfer) }}" style="display:inline;" onsubmit="return confirm('Approve this transfer?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Approve</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('stock-transfers.reject', $transfer) }}" style="display:inline;" onsubmit="return confirm('Reject this transfer?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>
+                                        </form>
+                                    @else
+                                        <span style="color:#94a3b8;font-size:12px;">Awaiting review</span>
+                                        <form method="POST" action="{{ route('stock-transfers.cancel', $transfer) }}" style="display:inline;" onsubmit="return confirm('Cancel this transfer request?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" style="background:#475569;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Cancel</button>
+                                        </form>
+                                    @endif
                                 @else
                                     <span style="color:#94a3b8;font-size:12px;">—</span>
                                 @endif
