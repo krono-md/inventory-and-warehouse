@@ -57,6 +57,13 @@
                 <option value="low_stock" {{ ($filters['type'] ?? '') === 'low_stock' ? 'selected' : '' }}>Low Stock</option>
                 <option value="out_of_stock" {{ ($filters['type'] ?? '') === 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
             </select>
+            <!-- Filter: Warehouse -->
+            <select name="warehouse" onchange="this.form.submit()" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
+                <option value="">All Warehouses</option>
+                @foreach ($warehouses as $wh)
+                    <option value="{{ $wh->id }}" {{ ($filters['warehouse'] ?? '') == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
+                @endforeach
+            </select>
             <!-- Filter: Status -->
             <select name="status" onchange="this.form.submit()" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
                 <option value="">All Status</option>
@@ -64,6 +71,13 @@
                 <option value="acknowledged" {{ ($filters['status'] ?? '') === 'acknowledged' ? 'selected' : '' }}>Acknowledged</option>
                 <option value="resolved" {{ ($filters['status'] ?? '') === 'resolved' ? 'selected' : '' }}>Resolved</option>
             </select>
+            <!-- Clear Filters -->
+            @if(array_filter($filters ?? []))
+                <a href="{{ route('notifications') }}" style="background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;" title="Clear all filters">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear
+                </a>
+            @endif
         </form>
 
         <!-- Table -->

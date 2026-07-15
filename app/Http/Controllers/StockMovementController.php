@@ -24,6 +24,15 @@ class StockMovementController extends Controller
             $query->where('reference', $reference);
         }
 
+        if ($dateRange = $request->input('date_range')) {
+            match ($dateRange) {
+                'today' => $query->whereDate('created_at', today()),
+                'this_week' => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+                'this_month' => $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]),
+                default => null,
+            };
+        }
+
         if ($search = $request->input('search')) {
             $search = strtolower($search);
             $query->where(function ($q) use ($search) {

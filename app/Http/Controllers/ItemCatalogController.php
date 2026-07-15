@@ -30,18 +30,23 @@ class ItemCatalogController extends Controller
         }
 
         if ($category = $request->input('category')) {
-            $query->whereHas('category', fn ($q) => $q->where('name', $category));
+            $query->where('category_id', $category);
         }
 
         if ($warehouse = $request->input('warehouse')) {
-            $query->whereHas('stockLevels', fn ($q) => $q->whereHas('warehouse', fn ($wq) => $wq->where('name', $warehouse)));
+            $query->whereHas('stockLevels', fn ($q) => $q->where('warehouse_id', $warehouse));
+        }
+
+        if ($status = $request->input('status')) {
+            match ($status) {
+                'Out of Stock' => $query->outOfStock(),
+                'Low Stock' => $query->lowStock(),
+                'In Stock' => $query->inStock(),
+                default => null,
+            };
         }
 
         $items = $query->get();
-
-        if ($status = $request->input('status')) {
-            $items = $items->filter(fn ($item) => $item->status === $status)->values();
-        }
 
         $allLevels = StockLevel::all();
 

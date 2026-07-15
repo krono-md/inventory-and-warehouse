@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,10 @@ class NotificationController extends Controller
 
         if ($type = $request->input('type')) {
             $query->where('type', $type);
+        }
+
+        if ($warehouse = $request->input('warehouse')) {
+            $query->where('warehouse_id', $warehouse);
         }
 
         if ($search = $request->input('search')) {
@@ -44,7 +49,8 @@ class NotificationController extends Controller
                 ->groupBy('item_id')
                 ->havingRaw('COUNT(*) > 1')
                 ->get()->count(),
-            'filters' => $request->only(['search', 'status', 'type']),
+            'filters' => $request->only(['search', 'status', 'type', 'warehouse']),
+            'warehouses' => Warehouse::orderBy('name')->get(),
             'activePage' => 'notifications',
         ]);
     }

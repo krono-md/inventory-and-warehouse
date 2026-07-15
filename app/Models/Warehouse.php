@@ -19,7 +19,32 @@ class Warehouse extends Model
         'country',
         'capacity_units',
         'status',
+        'last_activity_at',
+        'deactivated_at',
     ];
+
+    protected $casts = [
+        'last_activity_at' => 'datetime',
+        'deactivated_at' => 'datetime',
+    ];
+
+    public function isInactive(): bool
+    {
+        return $this->status === 'inactive';
+    }
+
+    public function touchActivity(): void
+    {
+        $this->forceFill(['last_activity_at' => now()])->save();
+    }
+
+    public function getDaysSinceActivityAttribute(): ?int
+    {
+        if (!$this->last_activity_at) {
+            return null;
+        }
+        return (int) $this->last_activity_at->diffInDays(now());
+    }
 
     public function stockLevels(): HasMany
     {

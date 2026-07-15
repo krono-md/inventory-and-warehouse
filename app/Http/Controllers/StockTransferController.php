@@ -67,8 +67,8 @@ class StockTransferController extends Controller
     {
         $validated = $request->validate([
             'item_id' => 'required|exists:items,id',
-            'from_warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at')],
-            'to_warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at'), 'different:from_warehouse_id'],
+            'from_warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at')->where('status', 'active')],
+            'to_warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at')->where('status', 'active'), 'different:from_warehouse_id'],
             'quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
         ]);
@@ -146,6 +146,9 @@ class StockTransferController extends Controller
 
             $destination->notification_source = 'transfer';
             $destination->increment('quantity_on_hand', $transfer->quantity);
+
+            Warehouse::whereIn('id', [$transfer->from_warehouse_id, $transfer->to_warehouse_id])
+                ->update(['last_activity_at' => $now]);
 
             StockMovement::create([
                 'type' => 'transfer',

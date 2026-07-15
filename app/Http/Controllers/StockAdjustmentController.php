@@ -74,7 +74,7 @@ class StockAdjustmentController extends Controller
     {
         $validated = $request->validate([
             'item_id' => 'required|exists:items,id',
-            'warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at')],
+            'warehouse_id' => ['required', Rule::exists('warehouses', 'id')->whereNull('deleted_at')->where('status', 'active')],
             'type' => 'required|in:increase,decrease',
             'quantity' => 'required|integer|min:1',
             'reason' => 'required|in:damage,expired,recount,theft,correction',
@@ -136,6 +136,9 @@ class StockAdjustmentController extends Controller
             } else {
                 $stockLevel->decrement('quantity_on_hand', $adjustment->quantity);
             }
+
+            Warehouse::where('id', $adjustment->warehouse_id)
+                ->update(['last_activity_at' => now()]);
 
             $adjustment->update([
                 'status' => 'approved',

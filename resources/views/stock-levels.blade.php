@@ -68,6 +68,13 @@
                 <option value="low_stock" {{ ($filters['status'] ?? '') === 'low_stock' ? 'selected' : '' }}>Low Stock</option>
                 <option value="out_of_stock" {{ ($filters['status'] ?? '') === 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
             </select>
+            <!-- Clear Filters -->
+            @if(array_filter($filters ?? []))
+                <a href="{{ route('stock-levels') }}" style="background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;" title="Clear all filters">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear
+                </a>
+            @endif
         </form>
 
         <!-- Table -->

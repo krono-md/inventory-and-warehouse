@@ -65,14 +65,14 @@
         <select name="category" onchange="this.form.submit();" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
             <option value="">All Categories</option>
             @foreach ($categories as $category)
-                <option value="{{ data_get($category, 'name') }}" {{ request('category') == data_get($category, 'name') ? 'selected' : '' }}>{{ data_get($category, 'name') }}</option>
+                <option value="{{ data_get($category, 'id') }}" {{ request('category') == data_get($category, 'id') ? 'selected' : '' }}>{{ data_get($category, 'name') }}</option>
             @endforeach
         </select>
         <!-- Filter: Warehouse -->
         <select name="warehouse" onchange="this.form.submit();" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
             <option value="">All Warehouse</option>
             @foreach ($warehouses as $warehouse)
-                <option value="{{ data_get($warehouse, 'name') }}" {{ request('warehouse') == data_get($warehouse, 'name') ? 'selected' : '' }}>{{ data_get($warehouse, 'name') }}</option>
+                <option value="{{ data_get($warehouse, 'id') }}" {{ request('warehouse') == data_get($warehouse, 'id') ? 'selected' : '' }}>{{ data_get($warehouse, 'name') }}</option>
             @endforeach
         </select>
         <!-- Filter: Status -->
@@ -82,6 +82,13 @@
             <option value="Low Stock" {{ request('status') === 'Low Stock' ? 'selected' : '' }}>Low Stock</option>
             <option value="Out of Stock" {{ request('status') === 'Out of Stock' ? 'selected' : '' }}>Out of Stock</option>
         </select>
+        <!-- Clear Filters -->
+        @if(request()->anyFilled(['search', 'category', 'warehouse', 'status']))
+            <a href="{{ route('item-catalog') }}" style="background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;" title="Clear all filters">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                Clear
+            </a>
+        @endif
     </form>
 
     <!-- Table -->

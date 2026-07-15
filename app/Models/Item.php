@@ -34,6 +34,48 @@ class Item extends Model
         return $this->hasMany(StockMovement::class);
     }
 
+    public function scopeOutOfStock($query)
+    {
+        return $query->whereIn('items.id', function ($sq) {
+            $sq->select('item_id')
+                ->from('stock_levels')
+                ->groupBy('item_id')
+                ->havingRaw('SUM(quantity_on_hand) <= 0');
+        });
+    }
+
+    public function scopeLowStock($query)
+    {
+        return $query->whereIn('items.id', function ($sq) {
+            $sq->select('item_id')
+                ->from('stock_levels')
+                ->whereColumn('quantity_on_hand', '<=', 'reorder_threshold')
+                ->where('quantity_on_hand', '>', 0)
+                ->groupBy('item_id');
+        })->whereIn('items.id', function ($sq) {
+            $sq->select('item_id')
+                ->from('stock_levels')
+                ->groupBy('item_id')
+                ->havingRaw('SUM(quantity_on_hand) > 0');
+        });
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->whereIn('items.id', function ($sq) {
+            $sq->select('item_id')
+                ->from('stock_levels')
+                ->groupBy('item_id')
+                ->havingRaw('SUM(quantity_on_hand) > 0');
+        })->whereNotIn('items.id', function ($sq) {
+            $sq->select('item_id')
+                ->from('stock_levels')
+                ->whereColumn('quantity_on_hand', '<=', 'reorder_threshold')
+                ->where('quantity_on_hand', '>', 0)
+                ->groupBy('item_id');
+        });
+    }
+
     public function getTotalStockAttribute(): int
     {
         return $this->stockLevels()->sum('quantity_on_hand');

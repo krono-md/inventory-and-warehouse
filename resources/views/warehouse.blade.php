@@ -75,6 +75,22 @@
 
                 <!-- Card Body -->
                 <div style="background:#ffffff;border-radius:0 0 16px 16px;padding:16px;flex:1 1 auto;display:flex;flex-direction:column;">
+                    @php
+                        $daysInactive = data_get($warehouse, 'days_since_activity');
+                        $showInactivityWarning = $warehouse->status === 'active' && ($daysInactive === null || $daysInactive >= 90);
+                    @endphp
+                    @if($showInactivityWarning)
+                        <div style="display:flex;align-items:center;gap:6px;padding:8px 10px;margin-bottom:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;font-size:11px;color:#b45309;">
+                            <svg width="14" height="14" fill="none" stroke="#b45309" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                            <span style="font-weight:600;">
+                                @if($daysInactive === null)
+                                    No recorded activity
+                                @else
+                                    Inactive for {{ $daysInactive }} days — consider deactivating
+                                @endif
+                            </span>
+                        </div>
+                    @endif
                     <p style="font-size:10px;font-weight:700;color:#64748b;letter-spacing:0.6px;margin-bottom:6px;">CAPACITY STORAGE</p>
                     <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;">
                         <span style="font-size:28px;font-weight:800;color:#0f172a;">{{ data_get($warehouse, 'capacity_percentage') }}%</span>

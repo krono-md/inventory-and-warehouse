@@ -241,5 +241,17 @@
         </div>
         @include('partials.sidebar-scripts')
         @stack('scripts')
+        <script>
+            // Auto-submit search/filter forms after the user stops typing
+            document.querySelectorAll('form input[name="search"]').forEach(function (input) {
+                let typingTimer;
+                input.addEventListener('input', function () {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(function () {
+                        input.form.submit();
+                    }, 700);
+                });
+            });
+        </script>
     </body>
 </html>
