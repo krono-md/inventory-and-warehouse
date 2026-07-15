@@ -198,26 +198,26 @@
                 {
                     label: 'Inbound',
                     data: @json($trendData['inbound']),
-                    backgroundColor: '#1b6fc8',
-                    borderRadius: 10,
+                    backgroundColor: '#22c55e',
+                    borderRadius: 4,
                 },
                 {
                     label: 'Outbound',
                     data: @json($trendData['outbound']),
-                    backgroundColor: '#f0a93e',
-                    borderRadius: 10,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 4,
                 },
                 {
                     label: 'Adjustment',
                     data: @json($trendData['adjustments']),
-                    backgroundColor: '#8b5cf6',
-                    borderRadius: 10,
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4,
                 },
                 {
                     label: 'Transfer',
                     data: @json($trendData['transfers']),
-                    backgroundColor: '#2563eb',
-                    borderRadius: 10,
+                    backgroundColor: '#9ca3af',
+                    borderRadius: 4,
                 }
             ]
         },
@@ -232,12 +232,28 @@
             },
             scales: {
                 x: {
+                    stacked: true,
                     ticks: { color: '#94a3b8' },
                     grid: { color: 'rgba(255,255,255,0.06)' }
                 },
                 y: {
+                    stacked: true,
                     beginAtZero: true,
-                    ticks: { color: '#94a3b8' },
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'Units Moved',
+                        color: '#e2e8f0',
+                        font: { size: 12, weight: 600 }
+                    },
+                    ticks: {
+                        color: '#94a3b8',
+                        callback: function(value) {
+                            if (Number.isInteger(value)) {
+                                return value;
+                            }
+                        }
+                    },
                     grid: { color: 'rgba(255,255,255,0.06)' }
                 }
             }
