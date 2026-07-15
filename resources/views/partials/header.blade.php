@@ -20,32 +20,32 @@
 
             <!-- Notification Dropdown -->
             <div id="notificationDropdown" class="notification-dropdown">
-                <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-weight:700;font-size:14px;color:#0f172a;">Notifications</span>
+                <div class="notification-dropdown-header">
+                    <span class="notification-dropdown-title">Notifications</span>
                     @if($headerNotifCount > 0)
-                        <span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;">{{ $headerNotifCount }} open</span>
+                        <span class="notification-dropdown-count">{{ $headerNotifCount }} open</span>
                     @endif
                 </div>
-                <div style="max-height:320px;overflow-y:auto;">
+                <div class="notification-dropdown-body">
                     @php
                         $headerNotifs = \App\Models\Notification::with(['item', 'warehouse'])->where('status', '!=', 'resolved')->orderByDesc('created_at')->take(8)->get();
                     @endphp
                     @forelse($headerNotifs as $notif)
-                        <div style="padding:10px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:10px;">
-                            <div style="width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;background:{{ $notif->type === 'out_of_stock' ? '#ef4444' : '#f59e0b' }};"></div>
+                        <div class="notification-dropdown-item">
+                            <div class="notification-dot {{ $notif->type === 'out_of_stock' ? 'notification-dot-out' : 'notification-dot-low' }}"></div>
                             <div style="min-width:0;">
-                                <p style="font-size:12px;font-weight:600;color:#0f172a;margin:0;">{{ $notif->item->name }}</p>
-                                <p style="font-size:11px;color:#64748b;margin:2px 0 0;">{{ $notif->type === 'out_of_stock' ? 'Out of Stock' : 'Low Stock' }} at {{ $notif->warehouse?->name ?? 'Deleted' }}</p>
-                                <p style="font-size:10px;color:#94a3b8;margin:2px 0 0;">{{ $notif->created_at->diffForHumans() }} &middot; {{ ucfirst($notif->triggered_by) }}</p>
+                                <p class="notification-dropdown-item-title">{{ $notif->item->name }}</p>
+                                <p class="notification-dropdown-item-desc">{{ $notif->type === 'out_of_stock' ? 'Out of Stock' : 'Low Stock' }} at {{ $notif->warehouse?->name ?? 'Deleted' }}</p>
+                                <p class="notification-dropdown-item-time">{{ $notif->created_at->diffForHumans() }} &middot; {{ ucfirst($notif->triggered_by) }}</p>
                             </div>
                         </div>
                     @empty
-                        <div style="padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px;">
+                        <div class="notification-dropdown-empty">
                             No active notifications.
                         </div>
                     @endforelse
                 </div>
-                <a href="{{ route('notifications') }}" style="display:block;padding:12px 16px;text-align:center;font-size:12px;font-weight:600;color:#1b6fc8;text-decoration:none;border-top:1px solid #e2e8f0;">
+                <a href="{{ route('notifications') }}" class="notification-dropdown-footer">
                     View All Notifications
                 </a>
             </div>
