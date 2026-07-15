@@ -54,13 +54,10 @@ class StockMovementController extends Controller
         ];
         $totals['net'] = $totals['inbound'] - $totals['outbound'] + $totals['adjustment'];
 
-        $references = StockMovement::pluck('reference')->unique()->filter()->values();
-
         return view('stock-movement', [
             'movements' => $movements,
             'warehouses' => Warehouse::all(),
             'totals' => $totals,
-            'references' => $references,
             'activePage' => 'stock-movement',
         ]);
     }

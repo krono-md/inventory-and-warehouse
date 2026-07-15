@@ -55,13 +55,6 @@
                     <option value="this_week" {{ request('date_range') === 'this_week' ? 'selected' : '' }}>This Week</option>
                     <option value="this_month" {{ request('date_range') === 'this_month' ? 'selected' : '' }}>This Month</option>
                 </select>
-                <!-- Filter: Reference -->
-                <select name="reference" onchange="document.getElementById('filters-form').submit();" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
-                    <option value="">Reference</option>
-                    @foreach (($references ?? []) as $ref)
-                        <option value="{{ $ref }}" {{ request('reference') === $ref ? 'selected' : '' }}>{{ $ref }}</option>
-                    @endforeach
-                </select>
                 <!-- Clear Filters -->
                 @if(request()->anyFilled(['search', 'type', 'warehouse', 'date_range', 'reference']))
                     <a href="{{ route('stock-movement') }}" style="background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;" title="Clear all filters">
