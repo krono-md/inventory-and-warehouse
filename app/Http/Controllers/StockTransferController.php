@@ -73,6 +73,23 @@ class StockTransferController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Enforce quantity <= available stock in the selected source warehouse.
+        $stockLevel = StockLevel::where('item_id', $validated['item_id'])
+            ->where('warehouse_id', $validated['from_warehouse_id'])
+            ->first();
+
+        if (!$stockLevel) {
+            return back()
+                ->withErrors(['quantity' => 'No stock level record exists for the selected source warehouse.'])
+                ->withInput();
+        }
+
+        if ($stockLevel->quantity_on_hand < $validated['quantity']) {
+            return back()
+                ->withErrors(['quantity' => "Insufficient stock in source warehouse. Only {$stockLevel->quantity_on_hand} units available."])
+                ->withInput();
+        }
+
         $validated['status'] = 'pending';
         $validated['requested_by'] = Auth::id();
         $validated['requested_by_user_id'] = Auth::id();

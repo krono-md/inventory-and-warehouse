@@ -46,6 +46,48 @@ class StockMovementController extends Controller
 
         $movements = $query->paginate(10)->appends($request->query());
 
+        // Merge transfer movements (which are stored as two rows: from & to) into a single display row.
+        // Group by item_id + reference since that's how transfer rows are created.
+        $mergedMovements = collect();
+        $transferGroups = $movements->getCollection()->groupBy(fn ($m) => $m->type === 'transfer'
+            ? ($m->item_id . '|' . ($m->reference ?? ''))
+            : null
+        );
+
+        // Add non-transfer movements as-is
+        foreach ($movements->getCollection() as $movement) {
+            if ($movement->type !== 'transfer') {
+                $mergedMovements->push($movement);
+            }
+        }
+
+        foreach ($transferGroups as $groupKey => $group) {
+            if ($groupKey === null) {
+                continue;
+            }
+
+            // Take the newest row as the base (for date / performer / item fields)
+            $base = $group->sortByDesc('created_at')->first();
+
+            $transferFrom = $group->firstWhere('warehouse_id', $group->min('warehouse_id')) ?? $group->first();
+            $transferTo = $group->firstWhere('warehouse_id', $group->max('warehouse_id')) ?? $group->last();
+
+            $fromName = $transferFrom?->warehouse?->name ?? 'Deleted';
+            $toName = $transferTo?->warehouse?->name ?? 'Deleted';
+
+            // Attach display-only fields consumed by the blade.
+            $base->transfer_warehouses_display = $fromName . ' ⇄ ' . $toName;
+            $base->transfer_quantity_display = $base->quantity;
+
+            $mergedMovements->push($base);
+        }
+
+        // Sort merged results newest-first
+        $mergedMovements = $mergedMovements->sortByDesc('created_at')->values();
+
+        // Replace pagination collection so links stay correct.
+        $movements->setCollection($mergedMovements);
+
         $totals = [
             'inbound' => StockMovement::where('type', 'inbound')->sum('quantity'),
             'outbound' => StockMovement::where('type', 'outbound')->sum('quantity'),

@@ -53,13 +53,39 @@ class DashboardController extends Controller
             ];
         });
 
-        $recentMovements = $movements->map(function ($m) {
+        // Merge transfer movements (stored as two rows: from & to) into a single display row.
+        $mergedMovements = $movements->groupBy(function ($m) {
+            return $m->type === 'transfer'
+                ? ($m->item_id . '|' . ($m->reference ?? ''))
+                : ('__single__|' . $m->id);
+        })->map(function ($group) {
+            $base = $group->sortByDesc('created_at')->first();
+
+            if ($base->type !== 'transfer') {
+                return $base;
+            }
+
+            $from = $group->sortBy('warehouse_id')->first();
+            $to = $group->sortByDesc('warehouse_id')->first();
+
+            $fromName = $from?->warehouse?->name ?? 'Deleted';
+            $toName = $to?->warehouse?->name ?? 'Deleted';
+
+            // Attach display-only value used by index.blade.php (expects a string in ['warehouse']).
+            $base->transfer_warehouses_display = $fromName . ' → ' . $toName;
+
+            return $base;
+        })->sortByDesc('created_at')->values();
+
+        $recentMovements = $mergedMovements->values()->map(function ($m) {
             return [
                 'type' => $m->type,
                 'item_name' => $m->item->name,
                 'sku' => $m->item->sku,
                 'quantity' => $m->quantity,
-                'warehouse' => $m->warehouse?->name ?? 'Deleted',
+                'warehouse' => $m->type === 'transfer'
+                    ? ($m->transfer_warehouses_display ?? ($m->warehouse?->name ?? 'Deleted'))
+                    : ($m->warehouse?->name ?? 'Deleted'),
                 'reference' => $m->reference,
                 'date' => $m->created_at->format('M d, Y h:i A'),
             ];
