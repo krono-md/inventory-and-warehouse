@@ -43,7 +43,10 @@ class Warehouse extends Model
         if (!$this->last_activity_at) {
             return null;
         }
-        return (int) $this->last_activity_at->diffInDays(now());
+
+        // Prevent misleading values if last_activity_at is accidentally in the future.
+        $days = (int) $this->last_activity_at->diffInDays(now());
+        return max(0, $days);
     }
 
     public function stockLevels(): HasMany

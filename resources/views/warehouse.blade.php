@@ -96,7 +96,7 @@
                         <div class="capacity-bar" style="width:{{ data_get($warehouse, 'capacity_percentage') }}%;"></div>
                     </div>
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
-                        <span style="font-size:11px;color:#64748b;">{{ $warehouse->item_types_count ?? 0 }} Item Types</span>
+                        
                         <div style="display:flex;gap:6px;">
                             <button onclick="openEditModal({{ $warehouse->id }}, '{{ addslashes($warehouse->name) }}', {{ $warehouse->capacity_units }}, '{{ addslashes($warehouse->province) }}', '{{ addslashes($warehouse->city) }}', '{{ addslashes($warehouse->address_description ?? '') }}', '{{ $warehouse->status }}', '{{ addslashes($warehouse->barangay ?? '') }}')" style="background:transparent;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;display:flex;align-items:center;" title="Edit">
                                 <svg width="14" height="14" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
