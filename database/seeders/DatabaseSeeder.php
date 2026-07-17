@@ -71,24 +71,23 @@ class DatabaseSeeder extends Seeder
     private function seedItems(): void
     {
         $items = [
-            ['sku' => 'CPU-INT-I5-001',    'name' => 'Intel Core i5-12400',             'category' => 'Component', 'unit_cost' => 9490.00],
-            ['sku' => 'CPU-INT-I7-002',    'name' => 'Intel Core i7-13700K',            'category' => 'Component', 'unit_cost' => 18990.00],
-            ['sku' => 'CPU-AMD-R5-003',    'name' => 'AMD Ryzen 5 7600X',               'category' => 'Component', 'unit_cost' => 11290.00],
-            ['sku' => 'RAM-DDR4-16G-004',  'name' => 'Kingston Fury 16GB DDR4 3200MHz', 'category' => 'Component', 'unit_cost' => 2490.00],
-            ['sku' => 'RAM-DDR5-32G-005',  'name' => 'Corsair Vengeance 32GB DDR5',     'category' => 'Component', 'unit_cost' => 5890.00],
-            ['sku' => 'SSD-NVME-1TB-006',  'name' => 'Samsung 980 NVMe 1TB',            'category' => 'Component', 'unit_cost' => 4790.00],
-            ['sku' => 'SSD-SATA-512G-007', 'name' => 'Crucial MX500 500GB SATA SSD',    'category' => 'Component', 'unit_cost' => 2490.00],
-            ['sku' => 'HDD-4TB-008',       'name' => 'Seagate Barracuda 4TB HDD',       'category' => 'Component', 'unit_cost' => 3990.00],
-            ['sku' => 'CPU-AMD-R7-009',    'name' => 'AMD Ryzen 7 7800X3D',             'category' => 'Component', 'unit_cost' => 21990.00],
-            ['sku' => 'RAM-DDR4-8G-010',   'name' => 'Crucial Basic 8GB DDR4',          'category' => 'Component', 'unit_cost' => 1290.00],
+            ['name' => 'Intel Core i5-12400',             'category' => 'Component', 'unit_cost' => 9490.00],
+            ['name' => 'Intel Core i7-13700K',            'category' => 'Component', 'unit_cost' => 18990.00],
+            ['name' => 'AMD Ryzen 5 7600X',               'category' => 'Component', 'unit_cost' => 11290.00],
+            ['name' => 'Kingston Fury 16GB DDR4 3200MHz', 'category' => 'Component', 'unit_cost' => 2490.00],
+            ['name' => 'Corsair Vengeance 32GB DDR5',     'category' => 'Component', 'unit_cost' => 5890.00],
+            ['name' => 'Samsung 980 NVMe 1TB',            'category' => 'Component', 'unit_cost' => 4790.00],
+            ['name' => 'Crucial MX500 500GB SATA SSD',    'category' => 'Component', 'unit_cost' => 2490.00],
+            ['name' => 'Seagate Barracuda 4TB HDD',       'category' => 'Component', 'unit_cost' => 3990.00],
+            ['name' => 'AMD Ryzen 7 7800X3D',             'category' => 'Component', 'unit_cost' => 21990.00],
+            ['name' => 'Crucial Basic 8GB DDR4',          'category' => 'Component', 'unit_cost' => 1290.00],
         ];
 
         foreach ($items as $item) {
             $categoryId = Category::where('name', $item['category'])->value('id');
             Item::firstOrCreate(
-                ['sku' => $item['sku']],
+                ['name' => $item['name']],
                 [
-                    'name' => $item['name'],
                     'category_id' => $categoryId,
                     'unit_cost' => $item['unit_cost'],
                 ]

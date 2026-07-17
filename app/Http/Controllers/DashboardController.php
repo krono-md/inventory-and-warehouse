@@ -36,7 +36,6 @@ class DashboardController extends Controller
 
                 return [
                     'name' => $notification->item->name,
-                    'sku' => $notification->item->sku,
                     'warehouse' => $notification->warehouse->name,
                     'type' => $notification->type,
                     'on_hand' => $stockLevel?->quantity_on_hand ?? 0,
@@ -81,7 +80,6 @@ class DashboardController extends Controller
             return [
                 'type' => $m->type,
                 'item_name' => $m->item->name,
-                'sku' => $m->item->sku,
                 'quantity' => $m->quantity,
                 'warehouse' => $m->type === 'transfer'
                     ? ($m->transfer_warehouses_display ?? ($m->warehouse?->name ?? 'Deleted'))

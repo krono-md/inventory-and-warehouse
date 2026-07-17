@@ -50,7 +50,7 @@
             <!-- Search -->
             <div style="display:flex;align-items:center;background:#E2E8F0;border-radius:8px;padding:8px 14px;gap:8px;flex:1;min-width:150px;">
                 <svg width="16" height="16" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by Name, SKU..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
+                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by Name..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
             </div>
             <!-- Filter: Status -->
             <select name="status" onchange="this.form.submit()" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
@@ -95,7 +95,6 @@
                     <tr style="background:#1b3a6b;">
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TRF.ID</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME</th>
-                        <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">FROM</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TO</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">QUANTITY</th>
@@ -110,7 +109,6 @@
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->reference }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->item->name }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->item->sku }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->fromWarehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->toWarehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;font-weight:600;">{{ $transfer->quantity }}</td>
@@ -184,7 +182,7 @@
                         <select name="item_id" id="item_id" class="nexora-modal-select" required>
                             <option value="">Select Source Warehouse First</option>
                             @foreach ($items as $item)
-                                <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }} ({{ $item->sku }})</option>
+                                <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                             @endforeach
                         </select>
                         @error('item_id')<p class="nexora-modal-error">{{ $message }}</p>@enderror
@@ -254,7 +252,7 @@
         availableItems.forEach(function(item) {
             const option = document.createElement('option');
             option.value = item.id;
-            option.textContent = item.name + ' (' + item.sku + ')';
+            option.textContent = item.name;
             if (String(item.id) === currentItemId) {
                 option.selected = true;
             }

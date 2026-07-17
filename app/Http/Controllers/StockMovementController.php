@@ -38,9 +38,8 @@ class StockMovementController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereRaw('LOWER(reference) LIKE ?', ["%{$search}%"])
                   ->orWhereHas('item', function ($iq) use ($search) {
-                      $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                         ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"]);
-                  });
+                      $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                   });
             });
         }
 

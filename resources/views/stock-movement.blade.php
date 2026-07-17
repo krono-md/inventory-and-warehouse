@@ -31,7 +31,7 @@
                 <!-- Search -->
                 <div style="display:flex;align-items:center;background:#E2E8F0;border-radius:8px;padding:8px 14px;gap:8px;flex:1;min-width:150px;">
                     <svg width="16" height="16" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Name, Sku, Reference..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Name, Reference..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
                 </div>
                 <!-- Filter: Type -->
                 <select name="type" onchange="document.getElementById('filters-form').submit();" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
@@ -71,7 +71,6 @@
                     <tr style="background:#1b3a6b;">
                         <th data-sort="type" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TYPE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="item_name" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="sku" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="quantity" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">QUANTITY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="warehouse" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="reference" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">REFERENCE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
@@ -94,7 +93,6 @@
                                 @endif
                             </td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->item?->name ?? 'N/A' }}</td>
-                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->item?->sku ?? 'N/A' }}</td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;font-weight:600;">
                                 @if ($movement->type === 'inbound')
                                     <span style="display:inline-flex;align-items:center;gap:4px;color:#0CAE57;">

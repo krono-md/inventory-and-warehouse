@@ -30,8 +30,7 @@ class NotificationController extends Controller
             $search = strtolower($search);
             $query->where(function ($q) use ($search) {
                 $q->whereHas('item', function ($iq) use ($search) {
-                    $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                       ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"]);
+                    $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
                 });
             });
         }

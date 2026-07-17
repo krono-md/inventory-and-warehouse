@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
 
     // Stock Receiving
     Route::get('/stock-receiving', [StockReceivingController::class, 'index'])->name('stock-receiving');
+    Route::post('/stock-receiving/{delivery}/approve', [StockReceivingController::class, 'approve'])->name('stock-receiving.approve');
+    Route::post('/stock-receiving/{delivery}/reject', [StockReceivingController::class, 'reject'])->name('stock-receiving.reject');
 
     // Stock Transfers
     Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers');

@@ -45,7 +45,7 @@
             <!-- Search -->
             <div style="display:flex;align-items:center;background:#E2E8F0;border-radius:8px;padding:8px 14px;gap:8px;flex:1;min-width:150px;">
                 <svg width="16" height="16" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by Name, Sku, Category..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
+                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by Name, Category..." style="border:none;outline:none;background:transparent;font-size:12px;font-family:'Inter',sans-serif;color:#333;width:100%;">
             </div>
             <!-- Filter: Categories -->
             <select name="category" onchange="this.form.submit()" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
@@ -82,7 +82,6 @@
             <table class="stock-table" style="width:100%;table-layout:auto;border-collapse:collapse;">
                 <thead>
                     <tr style="background:#1b3a6b;">
-                        <th data-sort="sku" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="item_name" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="category" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">CATEGORY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="warehouse" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
@@ -97,7 +96,6 @@
                 <tbody>
                     @forelse ($stockLevels as $level)
                         <tr style="border-bottom:1px solid #e2e8f0;">
-                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->sku }}</td>
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->name }}</td>
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->category->name ?? '-' }}</td>
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->warehouse?->name ?? 'Deleted' }}</td>

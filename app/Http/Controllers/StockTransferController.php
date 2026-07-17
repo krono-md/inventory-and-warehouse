@@ -33,8 +33,7 @@ class StockTransferController extends Controller
         if ($search = $request->input('search')) {
             $search = strtolower($search);
             $query->whereHas('item', function ($iq) use ($search) {
-                $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                   ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"]);
+                $iq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
             });
         }
 

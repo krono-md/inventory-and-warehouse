@@ -59,7 +59,7 @@
         <!-- Search -->
         <div style="display:flex;align-items:center;background:#E2E8F0;border-radius:8px;padding:8px 14px;gap:8px;flex:1;min-width:150px;">
             <svg width="16" height="16" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Name, Sku, Category... " style="border:none;outline:none;background:transparent;font-size:13px;font-family:'Inter',sans-serif;color:#333;width:100%;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Name, Category... " style="border:none;outline:none;background:transparent;font-size:13px;font-family:'Inter',sans-serif;color:#333;width:100%;">
         </div>
         <!-- Filter: Categories -->
         <select name="category" onchange="this.form.submit();" style="background:#E2E8F0;color:#000;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;flex-shrink:0;">
@@ -97,7 +97,6 @@
             <thead>
                 <tr style="background:#1b3a6b;">
                     <th style="width:30px;padding:12px 4px;"></th>
-                    <th data-sort="sku" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="name" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="category" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">CATEGORY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="quantity" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">TOTAL STOCK <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
@@ -113,7 +112,6 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748b"><path d="M8 5v14l11-7z"/></svg>
                         </span>
                     </td>
-                    <td style="text-align:center;padding:12px 4px;font-size:13px;font-family:'Courier New',monospace;color:#132B52;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'sku') }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#132B52;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'name') }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#5B7A9D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'category') }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#132B52;font-weight:600;">{{ data_get($item, 'total_stock') }}</td>

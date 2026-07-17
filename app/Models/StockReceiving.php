@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class StockReceiving extends Model
+{
+    protected $fillable = [
+        'shipment_number',
+        'item_id',
+        'warehouse_id',
+        'quantity',
+        'status',
+        'processed_by',
+        'remarks',
+        'processed_at',
+    ];
+
+    protected $casts = [
+        'processed_at' => 'datetime',
+    ];
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
+    public function processor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
+}

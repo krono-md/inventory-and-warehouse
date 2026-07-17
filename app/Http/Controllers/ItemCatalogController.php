@@ -22,7 +22,6 @@ class ItemCatalogController extends Controller
             $search = strtolower($search);
             $query->where(function ($q) use ($search) {
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
-                  ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"])
                   ->orWhereHas('category', function ($cq) use ($search) {
                       $cq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
                   });
@@ -53,7 +52,6 @@ class ItemCatalogController extends Controller
         $items = $items->map(function ($item) {
             return [
                 'id' => $item->id,
-                'sku' => $item->sku,
                 'name' => $item->name,
                 'category' => $item->category->name,
                 'warehouses' => $item->stockLevels->filter(fn ($sl) => $sl->quantity_on_hand > 0 && $sl->warehouse)->map(fn ($sl) => $sl->warehouse->name)->implode(', '),

@@ -50,7 +50,6 @@
                 <div style="display:flex;justify-content:space-between;align-items:start;">
                     <div>
                         <p style="font-size:14px;font-weight:600;color:#0b1e3d;">{{ $alert['name'] }}</p>
-                        <p style="font-size:12px;color:#5699e5;margin-bottom:2px;">{{ $alert['sku'] }}</p>
                     </div>
                     <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;{{ $alert['type'] === 'out_of_stock' ? 'background:#fee2e2;color:#dc2626;' : 'background:#fef3c7;color:#d97706;' }}">{{ $alert['type'] === 'out_of_stock' ? 'OUT' : 'LOW' }}</span>
                 </div>
@@ -110,7 +109,6 @@
                     <tr style="background:#1b3a6b;">
                         <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">TYPE</th>
                         <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">ITEM NAME</th>
-                        <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">SKU</th>
                         <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">QUANTITY</th>
                         <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">WAREHOUSE</th>
                         <th style="text-align: center; padding: 12px 8px; color: #ffffff; font-size:13px; font-weight:600;">REFERENCE</th>
@@ -134,7 +132,6 @@
                                 @endif
                             </td>
                             <td style="text-align: center; padding: 12px 8px; color: #000000; font-size:13px;">{{ $movement['item_name'] }}</td>
-                            <td style="text-align: center; padding: 12px 8px; color: #000000; font-size:13px;">{{ $movement['sku'] }}</td>
                             <td style="text-align: center; padding: 12px 8px; color: #000000; font-size:13px; font-weight:600;">
                                 @if ($movement['type'] === 'inbound')
                                     <span style="display:inline-flex;align-items:center;gap:4px;color:#0CAE57;">
@@ -175,7 +172,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 20px; color: #64748b; font-size:13px;">No recent stock movements.</td>
+                            <td colspan="6" style="text-align: center; padding: 20px; color: #64748b; font-size:13px;">No recent stock movements.</td>
                         </tr>
                     @endforelse
                 </tbody>
