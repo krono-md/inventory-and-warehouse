@@ -97,7 +97,7 @@
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $delivery->remarks ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @if(!$isProcessed)
-                                    <button onclick="openApproveModal({{ $delivery->id }}, '{{ $delivery->items }}', {{ $delivery->qty }})" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Approve</button>
+                            <button onclick="openApproveModal({{ $delivery->id }}, {{ $existingSkus[$delivery->shipment_number] ?? false ? 'true' : 'false' }})" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Approve</button>
                                     <button onclick="openRejectModal({{ $delivery->id }})" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>
                                 @else
                                     <span style="color:#94a3b8;font-size:12px;">—</span>
@@ -127,119 +127,105 @@
     </div>
 
     <!-- Approve Modal -->
-    <div id="approveModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:20px;padding:24px;width:90%;max-width:500px;">
-            <h3 style="margin:0 0 16px 0;font-size:18px;color:#0b1e3d;">Approve Delivery</h3>
+    <div id="approveModal" class="nexora-modal-overlay" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
+        <div class="nexora-modal">
+            <div class="nexora-modal-logo"></div>
+            <div class="nexora-modal-header">
+                <h2 class="nexora-modal-title">Approve Delivery</h2>
+                <button type="button" onclick="closeApproveModal()" class="nexora-modal-close">&times;</button>
+            </div>
+
             <form id="approveForm" method="POST" action="">
                 @csrf
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Item Name</label>
-                    <input type="text" id="approveItemName" disabled style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
-                </div>
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Quantity</label>
-                    <input type="number" id="approveQty" disabled style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
-                </div>
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Existing Item? <span style="color:#94a3b8;font-size:11px;">(Leave empty if new item)</span></label>
-                    <select name="item_id" id="existingItemSelect" onchange="toggleNewItemFields()" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
-                        <option value="">-- Create New Item --</option>
-                        @foreach($items as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div id="newItemFields">
-                    <div style="margin-bottom:16px;">
-                        <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">New Item Name <span style="color:#dc2626;">*</span></label>
-                        <input type="text" name="item_name" id="newItemName" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
+
+                <div class="nexora-modal-form" style="grid-template-columns:1fr;">
+                    <div>
+                        <label class="nexora-modal-label">Warehouse <span style="color:#ef4444;">*</span></label>
+                        <select name="warehouse_id" required class="nexora-modal-select">
+                            <option value="">-- Select Warehouse --</option>
+                            @foreach($warehouses as $warehouse)
+                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('warehouse_id')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
-                    <div style="margin-bottom:16px;">
-                        <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Category <span style="color:#dc2626;">*</span></label>
-                        <select name="category_id" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
+
+                    <div id="categoryField">
+                        <label class="nexora-modal-label">Category <span style="color:#ef4444;">*</span></label>
+                        <select name="category_id" class="nexora-modal-select">
                             <option value="">-- Select Category --</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
-                    </div>
-                    <div style="margin-bottom:16px;">
-                        <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Unit Cost</label>
-                        <input type="number" name="unit_cost" step="0.01" min="0" placeholder="0.00" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
+                        @error('category_id')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Warehouse <span style="color:#dc2626;">*</span></label>
-                    <select name="warehouse_id" required style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;">
-                        <option value="">-- Select Warehouse --</option>
-                        @foreach($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;">
-                    <button type="button" onclick="closeApproveModal()" style="background:#e2e8f0;color:#475569;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#166534;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">Approve & Receive</button>
+
+                <div class="nexora-modal-actions">
+                    <button type="button" onclick="closeApproveModal()" class="nexora-modal-btn-secondary">Cancel</button>
+                    <button type="submit" class="nexora-modal-btn-primary">Approve &amp; Receive</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Reject Modal -->
-    <div id="rejectModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:20px;padding:24px;width:90%;max-width:400px;">
-            <h3 style="margin:0 0 16px 0;font-size:18px;color:#0b1e3d;">Reject Delivery</h3>
+    <div id="rejectModal" class="nexora-modal-overlay" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:20;align-items:center;justify-content:center;">
+        <div class="nexora-modal" style="max-width:500px;">
+            <div class="nexora-modal-logo"></div>
+            <div class="nexora-modal-header">
+                <h2 class="nexora-modal-title">Reject Delivery</h2>
+                <button type="button" onclick="closeRejectModal()" class="nexora-modal-close">&times;</button>
+            </div>
+
             <form id="rejectForm" method="POST" action="">
                 @csrf
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;color:#475569;margin-bottom:6px;">Reason for Rejection <span style="color:#dc2626;">*</span></label>
-                    <textarea name="reject_reason" required rows="4" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;resize:vertical;"></textarea>
+
+                <div class="nexora-modal-form" style="grid-template-columns:1fr;">
+                    <div>
+                        <label class="nexora-modal-label">Reason for Rejection <span style="color:#ef4444;">*</span></label>
+                        <textarea name="reject_reason" required rows="4" class="nexora-modal-input" style="resize:vertical;"></textarea>
+                        @error('reject_reason')<p class="nexora-modal-error">{{ $message }}</p>@enderror
+                    </div>
                 </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;">
-                    <button type="button" onclick="closeRejectModal()" style="background:#e2e8f0;color:#475569;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#991b1b;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">Reject</button>
+
+                <div class="nexora-modal-actions">
+                    <button type="button" onclick="closeRejectModal()" class="nexora-modal-btn-secondary">Cancel</button>
+                    <button type="submit" class="nexora-modal-btn-primary" style="background:#dc2626;color:#fff;border-color:#dc2626;">Reject</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function openApproveModal(deliveryId, itemName, qty) {
-            document.getElementById('approveModal').style.display = 'flex';
+        function openApproveModal(deliveryId, itemExists) {
             document.getElementById('approveModal').classList.add('open');
             document.getElementById('approveForm').action = '/stock-receiving/' + deliveryId + '/approve';
-            document.getElementById('approveItemName').value = itemName;
-            document.getElementById('approveQty').value = qty;
-            document.getElementById('newItemName').value = itemName;
+
+            const categoryField = document.getElementById('categoryField');
+            if (itemExists) {
+                categoryField.style.display = 'none';
+                document.querySelector('#approveForm [name="category_id"]').removeAttribute('required');
+            } else {
+                categoryField.style.display = '';
+                document.querySelector('#approveForm [name="category_id"]').setAttribute('required', '');
+            }
         }
 
         function closeApproveModal() {
-            document.getElementById('approveModal').style.display = 'none';
             document.getElementById('approveModal').classList.remove('open');
             document.getElementById('approveForm').reset();
         }
 
         function openRejectModal(deliveryId) {
-            document.getElementById('rejectModal').style.display = 'flex';
             document.getElementById('rejectModal').classList.add('open');
             document.getElementById('rejectForm').action = '/stock-receiving/' + deliveryId + '/reject';
         }
 
         function closeRejectModal() {
-            document.getElementById('rejectModal').style.display = 'none';
             document.getElementById('rejectModal').classList.remove('open');
             document.getElementById('rejectForm').reset();
-        }
-
-        function toggleNewItemFields() {
-            const existingItemSelect = document.getElementById('existingItemSelect');
-            const newItemFields = document.getElementById('newItemFields');
-            
-            if (existingItemSelect.value) {
-                newItemFields.style.display = 'none';
-            } else {
-                newItemFields.style.display = 'block';
-            }
         }
 
         // Close modal when clicking outside

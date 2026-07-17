@@ -71,6 +71,7 @@
                     <tr style="background:#1b3a6b;">
                         <th data-sort="type" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TYPE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="item_name" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                        <th data-sort="sku" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="quantity" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">QUANTITY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="warehouse" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="reference" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">REFERENCE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
@@ -93,6 +94,7 @@
                                 @endif
                             </td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->item?->name ?? 'N/A' }}</td>
+                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->item?->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;font-weight:600;">
                                 @if ($movement->type === 'inbound')
                                     <span style="display:inline-flex;align-items:center;gap:4px;color:#0CAE57;">
@@ -136,7 +138,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No stock movements found.</td>
+                            <td colspan="9" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No stock movements found.</td>
                         </tr>
                     @endforelse
                 </tbody>

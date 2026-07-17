@@ -86,6 +86,7 @@
                 <thead>
                     <tr style="background:#1b3a6b;">
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME</th>
+                        <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TYPE</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TRIGGERED BY</th>
@@ -99,6 +100,7 @@
                     @forelse ($notifications as $notification)
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $notification->item->name }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $notification->item->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $notification->warehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 <span class="type-badge type-{{ $notification->type }}">{{ $notification->type === 'low_stock' ? 'Low Stock' : 'Out of Stock' }}</span>
@@ -129,7 +131,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No notifications found.</td>
+                            <td colspan="10" style="text-align:center;padding:20px;color:#64748b;font-size:13px;">No notifications found.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -34,7 +34,7 @@
                         <div class="notification-dropdown-item">
                             <div class="notification-dot {{ $notif->type === 'out_of_stock' ? 'notification-dot-out' : 'notification-dot-low' }}"></div>
                             <div style="min-width:0;">
-                                <p class="notification-dropdown-item-title">{{ $notif->item->name }}</p>
+                                <p class="notification-dropdown-item-title">{{ $notif->item->name }} <span style="color:#94a3b8;font-weight:400;">({{ $notif->item->sku ?? '—' }})</span></p>
                                 <p class="notification-dropdown-item-desc">{{ $notif->type === 'out_of_stock' ? 'Out of Stock' : 'Low Stock' }} at {{ $notif->warehouse?->name ?? 'Deleted' }}</p>
                                 <p class="notification-dropdown-item-time">{{ $notif->created_at->diffForHumans() }} &middot; {{ ucfirst($notif->triggered_by) }}</p>
                             </div>

@@ -124,16 +124,16 @@ class StockAdjustmentController extends Controller
                 return 'No stock level record exists for this item and warehouse combination.';
             }
 
-            if ($adjustment->type === 'decrease' && $stockLevel->quantity_on_hand < $adjustment->quantity) {
-                return "Insufficient stock. Only {$stockLevel->quantity_on_hand} units available.";
+            if ($adjustment->type === 'decrease' && $stockLevel->stock < $adjustment->quantity) {
+                return "Insufficient stock. Only {$stockLevel->stock} units available.";
             }
 
             $stockLevel->notification_source = 'inventory';
 
             if ($adjustment->type === 'increase') {
-                $stockLevel->increment('quantity_on_hand', $adjustment->quantity);
+                $stockLevel->increment('stock', $adjustment->quantity);
             } else {
-                $stockLevel->decrement('quantity_on_hand', $adjustment->quantity);
+                $stockLevel->decrement('stock', $adjustment->quantity);
             }
 
             Warehouse::where('id', $adjustment->warehouse_id)

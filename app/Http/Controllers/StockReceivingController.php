@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Delivery;
+use App\Models\Procurement;
 use App\Models\Item;
 use App\Models\StockLevel;
 use App\Models\StockMovement;
@@ -18,7 +18,7 @@ class StockReceivingController extends Controller
     public function index(Request $request)
     {
         // Fetch deliveries from procurement database with status 'pending' or 'in transit'
-        $query = Delivery::whereIn('status', ['pending', 'in transit'])
+        $query = Procurement::whereIn('status', ['pending', 'in transit'])
             ->orderByDesc('created_at');
 
         if ($search = $request->input('search')) {
@@ -36,10 +36,11 @@ class StockReceivingController extends Controller
         $deliveries = $query->paginate(10)->appends($request->query());
 
         // Get processed shipment numbers to mark which deliveries have been processed
+        // For procurement
         $processedShipments = StockReceiving::pluck('shipment_number')->toArray();
 
-        // Statistics
-        $pendingCount = Delivery::whereIn('status', ['pending', 'in transit'])->count();
+        // For kpi cards
+        $pendingCount = Procurement::whereIn('status', ['pending', 'in transit'])->count();
         $receivedTodayCount = StockReceiving::whereDate('processed_at', today())
             ->where('status', 'approved')
             ->count();
@@ -47,14 +48,38 @@ class StockReceivingController extends Controller
 
         $warehouses = Warehouse::where('status', 'active')->whereNull('deleted_at')->get();
         $categories = Category::all();
-        $items = Item::all();
+
+        // Pre-check which deliveries already have an item in inventory (by SKU)
+        $existingSkus = [];
+        $poIds = $deliveries->pluck('purchase_order_id')->filter()->unique()->values()->toArray();
+
+        if (!empty($poIds)) {
+            $products = DB::connection('procurement')
+                ->table('purchase_order_items')
+                ->join('supplier_products', 'purchase_order_items.supplier_product_id', '=', 'supplier_products.id')
+                ->whereIn('purchase_order_items.purchase_order_id', $poIds)
+                ->select('purchase_order_items.purchase_order_id', 'supplier_products.sku')
+                ->get();
+
+            $skus = $products->pluck('sku')->filter()->unique()->values()->toArray();
+            $knownSkus = [];
+            if (!empty($skus)) {
+                $knownSkus = Item::whereIn('sku', $skus)->pluck('sku')->toArray();
+            }
+
+            $skuByPo = $products->keyBy('purchase_order_id');
+            foreach ($deliveries as $delivery) {
+                $sku = $skuByPo[$delivery->purchase_order_id]->sku ?? null;
+                $existingSkus[$delivery->shipment_number] = $sku && in_array($sku, $knownSkus);
+            }
+        }
 
         return view('stock-receiving', [
             'deliveries' => $deliveries,
             'processedShipments' => $processedShipments,
             'warehouses' => $warehouses,
             'categories' => $categories,
-            'items' => $items,
+            'existingSkus' => $existingSkus,
             'pendingCount' => $pendingCount,
             'receivedTodayCount' => $receivedTodayCount,
             'rejectedCount' => $rejectedCount,
@@ -67,13 +92,10 @@ class StockReceivingController extends Controller
     {
         $validated = $request->validate([
             'warehouse_id' => 'required|exists:warehouses,id',
-            'item_id' => 'nullable|exists:items,id',
-            'category_id' => 'required_without:item_id|exists:categories,id',
-            'item_name' => 'required_without:item_id|string',
-            'unit_cost' => 'nullable|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $delivery = Delivery::findOrFail($deliveryId);
+        $delivery = Procurement::findOrFail($deliveryId);
 
         $result = $this->executeApproval($delivery, $validated);
 
@@ -91,16 +113,27 @@ class StockReceivingController extends Controller
             if (StockReceiving::where('shipment_number', $delivery->shipment_number)->exists()) {
                 return 'This delivery has already been processed.';
             }
-            // Determine if creating new item or using existing
-            if (isset($validated['item_id'])) {
-                // Existing item
-                $item = Item::find($validated['item_id']);
-            } else {
-                // Create new item
+
+            // Fetch procurement product data (sku, name, unit_price)
+            $product = $delivery->getSupplierProduct();
+
+            if (!$product) {
+                return 'Could not fetch product data from procurement.';
+            }
+
+            // Try to match existing item by SKU, or create new one
+            $item = Item::where('sku', $product->sku)->first();
+
+            if (!$item) {
+                if (empty($validated['category_id'])) {
+                    return 'Category is required for new items.';
+                }
+
                 $item = Item::create([
-                    'name' => $validated['item_name'],
+                    'sku' => $product->sku,
+                    'name' => $product->item_name,
                     'category_id' => $validated['category_id'],
-                    'unit_cost' => $validated['unit_cost'] ?? 0,
+                    'unit_cost' => $product->unit_price,
                 ]);
             }
 
@@ -111,14 +144,17 @@ class StockReceivingController extends Controller
                     'warehouse_id' => $validated['warehouse_id'],
                 ],
                 [
-                    'quantity_on_hand' => 0,
-                    'quantity_reserved' => 0,
                     'reorder_threshold' => 10,
                 ]
             );
 
             $stockLevel->notification_source = 'receiving';
-            $stockLevel->increment('quantity_on_hand', $delivery->qty);
+
+            if ($stockLevel->wasRecentlyCreated) {
+                $stockLevel->update(['stock' => $delivery->qty]);
+            } else {
+                $stockLevel->increment('stock', $delivery->qty);
+            }
 
             // Update warehouse activity
             Warehouse::where('id', $validated['warehouse_id'])
@@ -158,25 +194,31 @@ class StockReceivingController extends Controller
             'reject_reason' => 'required|string',
         ]);
 
-        $delivery = Delivery::findOrFail($deliveryId);
+        $delivery = Procurement::findOrFail($deliveryId);
 
-        // Check if already processed
-        if (StockReceiving::where('shipment_number', $delivery->shipment_number)->exists()) {
-            return back()->with('error', 'This delivery has already been processed.');
+        $result = DB::transaction(function () use ($delivery, $validated) {
+            if (StockReceiving::where('shipment_number', $delivery->shipment_number)->exists()) {
+                return 'This delivery has already been processed.';
+            }
+
+            StockReceiving::create([
+                'shipment_number' => $delivery->shipment_number,
+                'item_id' => null,
+                'warehouse_id' => null,
+                'quantity' => $delivery->qty,
+                'status' => 'rejected',
+                'processed_by' => Auth::id(),
+                'remarks' => $validated['reject_reason'],
+                'processed_at' => now(),
+            ]);
+
+            return true;
+        });
+
+        if ($result === true) {
+            return back()->with('success', 'Delivery rejected.');
         }
 
-        // Record the rejection
-        StockReceiving::create([
-            'shipment_number' => $delivery->shipment_number,
-            'item_id' => 1, // Placeholder - rejected items don't create item records
-            'warehouse_id' => 1, // Placeholder
-            'quantity' => $delivery->qty,
-            'status' => 'rejected',
-            'processed_by' => Auth::id(),
-            'remarks' => $validated['reject_reason'],
-            'processed_at' => now(),
-        ]);
-
-        return back()->with('success', 'Delivery rejected.');
+        return back()->with('error', $result);
     }
 }

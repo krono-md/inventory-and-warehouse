@@ -61,7 +61,7 @@ class Warehouse extends Model
 
     public function getUsedUnitsAttribute(): int
     {
-        return $this->stockLevels()->sum('quantity_on_hand');
+        return $this->stockLevels()->sum('stock');
     }
 
     public function getCapacityPercentageAttribute(): int

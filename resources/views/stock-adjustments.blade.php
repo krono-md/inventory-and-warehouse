@@ -106,6 +106,7 @@
                     <tr style="background:#1b3a6b;">
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ADJ.ID</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME</th>
+                        <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">QUANTITY</th>
                         <th style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">TYPE</th>
@@ -121,6 +122,7 @@
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $adjustment->id }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $adjustment->item->name }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->item->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->warehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;font-weight:600;">{{ $adjustment->quantity }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ ucfirst($adjustment->type) }}</td>

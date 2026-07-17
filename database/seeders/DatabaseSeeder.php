@@ -117,8 +117,7 @@ class DatabaseSeeder extends Seeder
                 StockLevel::create([
                     'item_id' => $itemId,
                     'warehouse_id' => $warehouseId,
-                    'quantity_on_hand' => -1,
-                    'quantity_reserved' => 0,
+                    'stock' => 0,
                     'reorder_threshold' => $thresholds[$itemId - 1],
                 ]);
             }
@@ -282,8 +281,7 @@ class DatabaseSeeder extends Seeder
 
             $qty = max(0, $data['qty']);
             $stockLevel->update([
-                'quantity_on_hand' => $qty,
-                'quantity_reserved' => (int) round($qty * 0.08),
+                'stock' => $qty,
             ]);
         }
     }

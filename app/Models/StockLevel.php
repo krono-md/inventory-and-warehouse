@@ -13,8 +13,7 @@ class StockLevel extends Model
     protected $fillable = [
         'item_id',
         'warehouse_id',
-        'quantity_on_hand',
-        'quantity_reserved',
+        'stock',
         'reorder_threshold',
     ];
 
@@ -30,18 +29,13 @@ class StockLevel extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function getAvailableAttribute(): int
-    {
-        return max(0, $this->quantity_on_hand - $this->quantity_reserved);
-    }
-
     public function getStatusAttribute(): string
     {
-        if ($this->quantity_on_hand <= 0) {
+        if ($this->stock <= 0) {
             return 'out_of_stock';
         }
 
-        if ($this->reorder_threshold > 0 && $this->quantity_on_hand <= $this->reorder_threshold) {
+        if ($this->reorder_threshold > 0 && $this->stock <= $this->reorder_threshold) {
             return 'low_stock';
         }
 

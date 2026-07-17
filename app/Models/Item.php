@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Item extends Model
 {
     protected $fillable = [
+        'sku',
         'name',
         'category_id',
         'unit_cost',
@@ -39,7 +40,7 @@ class Item extends Model
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(quantity_on_hand) <= 0');
+                ->havingRaw('SUM(stock) <= 0');
         });
     }
 
@@ -48,14 +49,14 @@ class Item extends Model
         return $query->whereIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
-                ->whereColumn('quantity_on_hand', '<=', 'reorder_threshold')
-                ->where('quantity_on_hand', '>', 0)
+                ->whereColumn('stock', '<=', 'reorder_threshold')
+                ->where('stock', '>', 0)
                 ->groupBy('item_id');
         })->whereIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(quantity_on_hand) > 0');
+                ->havingRaw('SUM(stock) > 0');
         });
     }
 
@@ -65,19 +66,19 @@ class Item extends Model
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(quantity_on_hand) > 0');
+                ->havingRaw('SUM(stock) > 0');
         })->whereNotIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
-                ->whereColumn('quantity_on_hand', '<=', 'reorder_threshold')
-                ->where('quantity_on_hand', '>', 0)
+                ->whereColumn('stock', '<=', 'reorder_threshold')
+                ->where('stock', '>', 0)
                 ->groupBy('item_id');
         });
     }
 
     public function getTotalStockAttribute(): int
     {
-        return $this->stockLevels()->sum('quantity_on_hand');
+        return $this->stockLevels()->sum('stock');
     }
 
     public function getStatusAttribute(): string

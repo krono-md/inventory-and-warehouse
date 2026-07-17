@@ -97,6 +97,7 @@
             <thead>
                 <tr style="background:#1b3a6b;">
                     <th style="width:30px;padding:12px 4px;"></th>
+                    <th data-sort="name" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="name" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="category" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">CATEGORY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="quantity" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">TOTAL STOCK <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
@@ -112,6 +113,7 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748b"><path d="M8 5v14l11-7z"/></svg>
                         </span>
                     </td>
+                    <td style="text-align:center;padding:12px 4px;font-size:13px;color:#132B52;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'sku') ?? '—' }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#132B52;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'name') }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#5B7A9D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ data_get($item, 'category') }}</td>
                     <td style="text-align:center;padding:12px 4px;font-size:13px;color:#132B52;font-weight:600;">{{ data_get($item, 'total_stock') }}</td>
@@ -135,9 +137,7 @@
                             <thead>
                                 <tr style="border-bottom:2px solid #e2e8f0;">
                                     <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Warehouse</th>
-                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">On Hand</th>
-                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Reserved</th>
-                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Available</th>
+                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Stock</th>
                                     <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Reorder Threshold</th>
                                     <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Status</th>
                                 </tr>
@@ -147,8 +147,6 @@
                                 <tr style="border-bottom:1px solid #e2e8f0; background:#ffffff;">
                                     <td style="padding:8px 10px;font-size:12px;color:#0f172a;">{{ $row['warehouse'] }}</td>
                                     <td style="text-align:center;padding:8px 10px;font-size:12px;color:#0f172a;font-weight:600;">{{ $row['on_hand'] }}</td>
-                                    <td style="text-align:center;padding:8px 10px;font-size:12px;color:#64748b;">{{ $row['reserved'] }}</td>
-                                    <td style="text-align:center;padding:8px 10px;font-size:12px;color:#0f172a;font-weight:600;">{{ $row['available'] }}</td>
                                     <td style="text-align:center;padding:6px 10px;" onclick="event.stopPropagation()">
                                         <form method="POST" action="{{ route('stock-levels.update', $row['stock_level_id']) }}" style="display:inline-flex;align-items:center;gap:4px;">
                                             @csrf

@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $movements = StockMovement::with(['item', 'warehouse'])->orderByDesc('created_at')->take(7)->get();
 
         $totalItems = $items->count();
-        $totalStockUnits = StockLevel::sum('quantity_on_hand');
+        $totalStockUnits = StockLevel::sum('stock');
         $lowStockAlerts = Notification::where('status', 'open')->count();
 
         $criticalAlerts = Notification::with(['item', 'warehouse'])
@@ -38,7 +38,7 @@ class DashboardController extends Controller
                     'name' => $notification->item->name,
                     'warehouse' => $notification->warehouse->name,
                     'type' => $notification->type,
-                    'on_hand' => $stockLevel?->quantity_on_hand ?? 0,
+                    'on_hand' => $stockLevel?->stock ?? 0,
                     'threshold' => $stockLevel?->reorder_threshold ?? 0,
                 ];
             });
@@ -48,7 +48,7 @@ class DashboardController extends Controller
         $warehouseDistribution = $warehouses->map(function ($w) {
             return [
                 'name' => $w->name,
-                'total' => $w->stockLevels()->sum('quantity_on_hand'),
+                'total' => $w->stockLevels()->sum('stock'),
             ];
         });
 

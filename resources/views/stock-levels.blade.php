@@ -83,13 +83,11 @@
                 <thead>
                     <tr style="background:#1b3a6b;">
                         <th data-sort="item_name" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ITEM NAME <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                        <th data-sort="sku" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">SKU <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="category" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">CATEGORY <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="warehouse" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">WAREHOUSE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="on_hand" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">ON HAND <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="reserved" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">RESERVED <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="available" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">AVAILABLE <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="reorder_threshold" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">MIN DAYS <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
-                        <th data-sort="days_remaining" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">DAYS LEFT <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                        <th data-sort="on_hand" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">STOCK <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                        <th data-sort="reorder_threshold" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">REORDER THRESHOLD <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                         <th data-sort="status" style="text-align:center;padding:10px 6px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;">STATUS <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     </tr>
                 </thead>
@@ -97,11 +95,10 @@
                     @forelse ($stockLevels as $level)
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->name }}</td>
+                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->item->category->name ?? '-' }}</td>
                             <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->warehouse?->name ?? 'Deleted' }}</td>
-                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->quantity_on_hand }}</td>
-                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->quantity_reserved }}</td>
-                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;">{{ $level->available }}</td>
+                            <td style="text-align:center;padding:12px 6px;color:#0f172a;font-size:12px;font-weight:600;">{{ $level->stock }}</td>
                             <td style="text-align:center;padding:8px 6px;color:#0f172a;font-size:12px;">
                                 <form method="POST" action="{{ route('stock-levels.update', $level) }}" style="display:inline-flex;align-items:center;gap:4px;">
                                     @csrf
@@ -110,16 +107,13 @@
                                     <button type="submit" style="background:#1b6fc8;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:600;">Save</button>
                                 </form>
                             </td>
-                            <td style="text-align:center;padding:12px 6px;font-size:12px;font-weight:600;{{ $level->days_remaining !== null && $level->reorder_threshold > 0 && $level->days_remaining <= $level->reorder_threshold ? 'color:#dc2626;' : 'color:#0f172a;' }}">
-                                {{ $level->days_remaining !== null ? $level->days_remaining . 'd' : '—' }}
-                            </td>
                             <td style="text-align:center;padding:12px 6px;">
                                 <span class="status-badge status-{{ $level->status }}">{{ $level->status_label }}</span>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" style="text-align:center;padding:24px;color:#64748b;font-size:13px;">No stock levels found.</td>
+                            <td colspan="7" style="text-align:center;padding:24px;color:#64748b;font-size:13px;">No stock levels found.</td>
                         </tr>
                     @endforelse
                 </tbody>

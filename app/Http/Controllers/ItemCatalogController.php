@@ -22,6 +22,7 @@ class ItemCatalogController extends Controller
             $search = strtolower($search);
             $query->where(function ($q) use ($search) {
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"])
                   ->orWhereHas('category', function ($cq) use ($search) {
                       $cq->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
                   });
@@ -52,18 +53,17 @@ class ItemCatalogController extends Controller
         $items = $items->map(function ($item) {
             return [
                 'id' => $item->id,
+                'sku' => $item->sku,
                 'name' => $item->name,
                 'category' => $item->category->name,
-                'warehouses' => $item->stockLevels->filter(fn ($sl) => $sl->quantity_on_hand > 0 && $sl->warehouse)->map(fn ($sl) => $sl->warehouse->name)->implode(', '),
-                'total_stock' => $item->stockLevels->sum('quantity_on_hand'),
+                'warehouses' => $item->stockLevels->filter(fn ($sl) => $sl->stock > 0 && $sl->warehouse)->map(fn ($sl) => $sl->warehouse->name)->implode(', '),
+                'total_stock' => $item->stockLevels->sum('stock'),
                 'unit_cost' => $item->unit_cost,
                 'status' => $item->status,
                 'stock_breakdown' => $item->stockLevels->filter(fn ($sl) => $sl->warehouse)->map(fn ($sl) => [
                     'stock_level_id' => $sl->id,
                     'warehouse' => $sl->warehouse->name,
-                    'on_hand' => $sl->quantity_on_hand,
-                    'reserved' => $sl->quantity_reserved,
-                    'available' => $sl->available,
+                    'on_hand' => $sl->stock,
                     'reorder_threshold' => $sl->reorder_threshold,
                     'status' => $sl->status_label,
                 ])->values()->toArray(),

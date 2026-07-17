@@ -44,7 +44,7 @@ class StockTransferController extends Controller
         $approvedCount = StockTransfer::where('status', 'approved')->count();
 
         $itemsByWarehouse = StockLevel::with('item')
-            ->where('quantity_on_hand', '>', 0)
+            ->where('stock', '>', 0)
             ->get()
             ->groupBy('warehouse_id')
             ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
@@ -83,9 +83,9 @@ class StockTransferController extends Controller
                 ->withInput();
         }
 
-        if ($stockLevel->quantity_on_hand < $validated['quantity']) {
+        if ($stockLevel->stock < $validated['quantity']) {
             return back()
-                ->withErrors(['quantity' => "Insufficient stock in source warehouse. Only {$stockLevel->quantity_on_hand} units available."])
+                ->withErrors(['quantity' => "Insufficient stock in source warehouse. Only {$stockLevel->stock} units available."])
                 ->withInput();
         }
 
@@ -140,16 +140,15 @@ class StockTransferController extends Controller
                 return 'No stock level record exists for the source warehouse.';
             }
 
-            if ($source->quantity_on_hand < $transfer->quantity) {
-                return "Insufficient stock in source warehouse. Only {$source->quantity_on_hand} units available.";
+            if ($source->stock < $transfer->quantity) {
+                return "Insufficient stock in source warehouse. Only {$source->stock} units available.";
             }
 
             if (!$destination) {
                 $destination = StockLevel::create([
                     'item_id' => $transfer->item_id,
                     'warehouse_id' => $transfer->to_warehouse_id,
-                    'quantity_on_hand' => 0,
-                    'quantity_reserved' => 0,
+                    'stock' => 0,
                     'reorder_threshold' => $source->reorder_threshold,
                 ]);
             }
@@ -158,10 +157,10 @@ class StockTransferController extends Controller
             $now = now();
 
             $source->notification_source = 'transfer';
-            $source->decrement('quantity_on_hand', $transfer->quantity);
+            $source->decrement('stock', $transfer->quantity);
 
             $destination->notification_source = 'transfer';
-            $destination->increment('quantity_on_hand', $transfer->quantity);
+            $destination->increment('stock', $transfer->quantity);
 
             Warehouse::whereIn('id', [$transfer->from_warehouse_id, $transfer->to_warehouse_id])
                 ->update(['last_activity_at' => $now]);

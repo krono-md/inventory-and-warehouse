@@ -10,7 +10,7 @@ class WarehouseController extends Controller
     public function index()
     {
         $warehouses = Warehouse::withCount(['stockLevels as item_types_count' => function ($query) {
-            $query->where('quantity_on_hand', '>', 0)->select(\Illuminate\Support\Facades\DB::raw('COUNT(DISTINCT item_id)'));
+            $query->where('stock', '>', 0)->select(\Illuminate\Support\Facades\DB::raw('COUNT(DISTINCT item_id)'));
         }])->get();
 
         return view('warehouse', [
