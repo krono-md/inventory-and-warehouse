@@ -146,7 +146,11 @@ class DashboardController extends Controller
             $inbound[] = $dayMovements->whereIn('type', ['inbound'])->sum('quantity');
             $outbound[] = $dayMovements->whereIn('type', ['outbound'])->sum('quantity');
             $adjustments[] = $dayMovements->whereIn('type', ['adjustment'])->sum('quantity');
-            $transfers[] = $dayMovements->where('type', 'transfer')->sum('quantity');
+            
+            // For transfers, count each unique transfer only once (they're stored as two records)
+            $transferMovements = $dayMovements->where('type', 'transfer');
+            $uniqueTransfers = $transferMovements->groupBy('reference')->map(fn ($group) => $group->first());
+            $transfers[] = $uniqueTransfers->sum('quantity');
         }
 
         return [

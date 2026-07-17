@@ -51,18 +51,18 @@ class StockMovementController extends Controller
         $mergedMovements = collect();
         $transferGroups = $movements->getCollection()->groupBy(fn ($m) => $m->type === 'transfer'
             ? ($m->item_id . '|' . ($m->reference ?? ''))
-            : null
+            : ('__single__|' . $m->id)
         );
 
-        // Add non-transfer movements as-is
-        foreach ($movements->getCollection() as $movement) {
-            if ($movement->type !== 'transfer') {
-                $mergedMovements->push($movement);
-            }
-        }
-
         foreach ($transferGroups as $groupKey => $group) {
-            if ($groupKey === null) {
+            // Skip empty keys
+            if ($groupKey === null || $groupKey === '') {
+                continue;
+            }
+
+            // Handle non-transfer movements (each has unique key)
+            if (str_starts_with($groupKey, '__single__|')) {
+                $mergedMovements->push($group->first());
                 continue;
             }
 
