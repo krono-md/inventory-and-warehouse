@@ -107,7 +107,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'require',
         ],
-        
+
         'order_fulfillment' => [
             'driver' => 'pgsql',
             'url' => env('DB_ORDERFULFILLMENT_CONNECTION'),

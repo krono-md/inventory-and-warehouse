@@ -106,7 +106,7 @@ class StockReceivingController extends Controller
         return back()->with('error', $result);
     }
 
-    private function executeApproval(Delivery $delivery, array $validated): true|string
+    private function executeApproval(Procurement $delivery, array $validated): true|string
     {
         return DB::transaction(function () use ($delivery, $validated) {
             // Check if already processed INSIDE transaction to prevent race condition
