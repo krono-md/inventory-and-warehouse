@@ -63,7 +63,7 @@ class StockAdjustmentController extends Controller
 
         return view('stock-adjustments', [
             'adjustments' => $adjustments,
-            'warehouses' => Warehouse::all(),
+            'warehouses' => Warehouse::where('status', 'active')->whereNull('deleted_at')->get(),
             'items' => Item::all(),
             'itemsByWarehouse' => $itemsByWarehouse,
             'stockMap' => $stockMap,
@@ -198,16 +198,26 @@ class StockAdjustmentController extends Controller
 
     public function cancel(StockAdjustment $adjustment)
     {
-        if ($adjustment->status !== 'pending') {
-            return back()->withErrors(["adj_action_{$adjustment->id}" => 'Only pending adjustments can be cancelled.']);
+        $result = DB::transaction(function () use ($adjustment) {
+            $adjustment = StockAdjustment::lockForUpdate()->find($adjustment->id);
+
+            if ($adjustment->status !== 'pending') {
+                return 'Only pending adjustments can be cancelled.';
+            }
+
+            if ($adjustment->requested_by !== Auth::id()) {
+                return 'You can only cancel your own adjustment requests.';
+            }
+
+            $adjustment->update(['status' => 'cancelled']);
+
+            return true;
+        });
+
+        if ($result === true) {
+            return back()->with('success', 'Adjustment request cancelled.');
         }
 
-        if ($adjustment->requested_by !== Auth::id()) {
-            return back()->withErrors(["adj_action_{$adjustment->id}" => 'You can only cancel your own adjustment requests.']);
-        }
-
-        $adjustment->update(['status' => 'cancelled']);
-
-        return back()->with('success', 'Adjustment request cancelled.');
+        return back()->withErrors(["adj_action_{$adjustment->id}" => $result]);
     }
 }

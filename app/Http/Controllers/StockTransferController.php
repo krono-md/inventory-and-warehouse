@@ -56,7 +56,7 @@ class StockTransferController extends Controller
 
         return view('stock-transfers', [
             'transfers' => $transfers,
-            'warehouses' => Warehouse::all(),
+            'warehouses' => Warehouse::where('status', 'active')->whereNull('deleted_at')->get(),
             'items' => Item::all(),
             'itemsByWarehouse' => $itemsByWarehouse,
             'stockMap' => $stockMap,
@@ -130,6 +130,19 @@ class StockTransferController extends Controller
 
             if ($transfer->status !== 'pending') {
                 return 'This transfer has already been processed.';
+            }
+
+            $fromWarehouse = Warehouse::where('id', $transfer->from_warehouse_id)
+                ->whereNull('deleted_at')->where('status', 'active')->lockForUpdate()->first();
+            $toWarehouse = Warehouse::where('id', $transfer->to_warehouse_id)
+                ->whereNull('deleted_at')->where('status', 'active')->lockForUpdate()->first();
+
+            if (!$fromWarehouse) {
+                return 'Source warehouse is no longer active.';
+            }
+
+            if (!$toWarehouse) {
+                return 'Destination warehouse is no longer active.';
             }
 
             $source = StockLevel::where('item_id', $transfer->item_id)
@@ -220,16 +233,26 @@ class StockTransferController extends Controller
 
     public function cancel(StockTransfer $transfer)
     {
-        if ($transfer->status !== 'pending') {
-            return back()->withErrors(["trf_action_{$transfer->id}" => 'Only pending transfers can be cancelled.']);
+        $result = DB::transaction(function () use ($transfer) {
+            $transfer = StockTransfer::lockForUpdate()->find($transfer->id);
+
+            if ($transfer->status !== 'pending') {
+                return 'Only pending transfers can be cancelled.';
+            }
+
+            if ($transfer->requested_by_user_id !== Auth::id()) {
+                return 'You can only cancel your own transfer requests.';
+            }
+
+            $transfer->update(['status' => 'cancelled']);
+
+            return true;
+        });
+
+        if ($result === true) {
+            return back()->with('success', 'Transfer request cancelled.');
         }
 
-        if ($transfer->requested_by_user_id !== Auth::id()) {
-            return back()->withErrors(["trf_action_{$transfer->id}" => 'You can only cancel your own transfer requests.']);
-        }
-
-        $transfer->update(['status' => 'cancelled']);
-
-        return back()->with('success', 'Transfer request cancelled.');
+        return back()->withErrors(["trf_action_{$transfer->id}" => $result]);
     }
 }

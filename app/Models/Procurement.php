@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Procurement extends Model
 {
@@ -31,16 +32,52 @@ class Procurement extends Model
 
     public function getSupplierProduct(): ?object
     {
-        return DB::connection('procurement')
+        $poItem = DB::connection('procurement')
             ->table('purchase_order_items')
-            ->join('supplier_products', 'purchase_order_items.supplier_product_id', '=', 'supplier_products.id')
-            ->where('purchase_order_items.purchase_order_id', $this->purchase_order_id)
-            ->select(
-                'purchase_order_items.name as item_name',
-                'purchase_order_items.qty',
-                'purchase_order_items.unit_price',
-                'supplier_products.sku'
-            )
+            ->where('purchase_order_id', $this->purchase_order_id)
             ->first();
+
+        if (!$poItem) {
+            return null;
+        }
+
+        $sku = null;
+
+        if ($poItem->supplier_product_id) {
+            $supplierProduct = DB::connection('procurement')
+                ->table('supplier_products')
+                ->where('id', $poItem->supplier_product_id)
+                ->first();
+
+            if ($supplierProduct) {
+                $sku = $supplierProduct->sku;
+            }
+        }
+
+        if (!$sku) {
+            $productName = trim(preg_replace('/\s*@\s*.*$/', '', $poItem->name));
+            $supplierProduct = DB::connection('procurement')
+                ->table('supplier_products')
+                ->where('name', $productName)
+                ->orWhere('name', 'ILIKE', $productName)
+                ->first();
+
+            if ($supplierProduct) {
+                $sku = $supplierProduct->sku;
+            }
+        }
+
+        if (!$sku) {
+            $sku = 'AUTO-' . strtoupper(Str::random(8));
+        }
+
+        $cleanName = trim(preg_replace('/\s*@\s*.*$/', '', $poItem->name));
+
+        return (object) [
+            'item_name' => $cleanName,
+            'qty' => $poItem->qty,
+            'unit_price' => $poItem->unit_price,
+            'sku' => $sku,
+        ];
     }
 }

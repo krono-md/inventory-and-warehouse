@@ -68,7 +68,6 @@ class WarehouseController extends Controller
             return back()->with('error', 'Cannot deactivate warehouse with stock. Relocate items first.');
         }
 
-        $warehouse->update(['status' => 'inactive']);
         $warehouse->delete();
 
         return redirect()->route('warehouse')->with('success', 'Warehouse deactivated.');

@@ -67,10 +67,10 @@ class StockReceivingController extends Controller
                 $knownSkus = Item::whereIn('sku', $skus)->pluck('sku')->toArray();
             }
 
-            $skuByPo = $products->keyBy('purchase_order_id');
+            $skusByPo = $products->groupBy('purchase_order_id')->map(fn ($items) => $items->pluck('sku')->filter()->unique()->values());
             foreach ($deliveries as $delivery) {
-                $sku = $skuByPo[$delivery->purchase_order_id]->sku ?? null;
-                $existingSkus[$delivery->shipment_number] = $sku && in_array($sku, $knownSkus);
+                $poSkus = $skusByPo->get($delivery->purchase_order_id, collect());
+                $existingSkus[$delivery->shipment_number] = $poSkus->intersect($knownSkus)->isNotEmpty();
             }
         }
 

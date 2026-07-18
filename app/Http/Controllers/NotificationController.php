@@ -49,7 +49,7 @@ class NotificationController extends Controller
                 ->havingRaw('COUNT(*) > 1')
                 ->get()->count(),
             'filters' => $request->only(['search', 'status', 'type', 'warehouse']),
-            'warehouses' => Warehouse::orderBy('name')->get(),
+            'warehouses' => Warehouse::where('status', 'active')->whereNull('deleted_at')->orderBy('name')->get(),
             'activePage' => 'notifications',
         ]);
     }
