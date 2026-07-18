@@ -134,6 +134,13 @@ class StockAdjustmentController extends Controller
                 return 'This adjustment has already been processed.';
             }
 
+            $warehouse = Warehouse::where('id', $adjustment->warehouse_id)
+                ->whereNull('deleted_at')->where('status', 'active')->lockForUpdate()->first();
+
+            if (!$warehouse) {
+                return 'Warehouse is no longer active.';
+            }
+
             $stockLevel = StockLevel::where('item_id', $adjustment->item_id)
                 ->where('warehouse_id', $adjustment->warehouse_id)
                 ->lockForUpdate()
@@ -181,19 +188,27 @@ class StockAdjustmentController extends Controller
 
     public function reject(StockAdjustment $adjustment)
     {
-        if ($adjustment->status !== 'pending') {
-            return back()->withErrors(["adj_action_{$adjustment->id}" => 'This adjustment has already been processed.']);
+        $result = DB::transaction(function () use ($adjustment) {
+            $adjustment = StockAdjustment::lockForUpdate()->find($adjustment->id);
+
+            if ($adjustment->status !== 'pending') {
+                return 'This adjustment has already been processed.';
+            }
+
+            if ($adjustment->requested_by === Auth::id()) {
+                return 'You cannot reject your own adjustment request.';
+            }
+
+            $adjustment->update(['status' => 'rejected']);
+
+            return true;
+        });
+
+        if ($result === true) {
+            return back()->with('success', 'Adjustment rejected.');
         }
 
-        if ($adjustment->requested_by === Auth::id()) {
-            return back()->withErrors(["adj_action_{$adjustment->id}" => 'You cannot reject your own adjustment request.']);
-        }
-
-        $adjustment->update([
-            'status' => 'rejected',
-        ]);
-
-        return back()->with('success', 'Adjustment rejected.');
+        return back()->withErrors(["adj_action_{$adjustment->id}" => $result]);
     }
 
     public function cancel(StockAdjustment $adjustment)

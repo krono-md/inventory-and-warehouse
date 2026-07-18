@@ -218,17 +218,27 @@ class StockTransferController extends Controller
 
     public function reject(StockTransfer $transfer)
     {
-        if ($transfer->status !== 'pending') {
-            return back()->withErrors(["trf_action_{$transfer->id}" => 'This transfer has already been processed.']);
+        $result = DB::transaction(function () use ($transfer) {
+            $transfer = StockTransfer::lockForUpdate()->find($transfer->id);
+
+            if ($transfer->status !== 'pending') {
+                return 'This transfer has already been processed.';
+            }
+
+            if ($transfer->requested_by_user_id === Auth::id()) {
+                return 'You cannot reject your own transfer request.';
+            }
+
+            $transfer->update(['status' => 'rejected']);
+
+            return true;
+        });
+
+        if ($result === true) {
+            return back()->with('success', 'Transfer rejected.');
         }
 
-        if ($transfer->requested_by_user_id === Auth::id()) {
-            return back()->withErrors(["trf_action_{$transfer->id}" => 'You cannot reject your own transfer request.']);
-        }
-
-        $transfer->update(['status' => 'rejected']);
-
-        return back()->with('success', 'Transfer rejected.');
+        return back()->withErrors(["trf_action_{$transfer->id}" => $result]);
     }
 
     public function cancel(StockTransfer $transfer)
