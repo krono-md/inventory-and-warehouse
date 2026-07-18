@@ -73,15 +73,9 @@
         const sidebarState = localStorage.getItem('sidebarState');
 
         if (sidebarState === 'open' && isDesktop()) {
-            sidenav.style.transition = 'none';
-            main.style.transition = 'none';
             sidenav.style.width = "250px";
             main.style.marginLeft = "250px";
             main.classList.add("sidebar-open");
-            setTimeout(function() {
-                sidenav.style.transition = '0.5s';
-                main.style.transition = 'margin-left .5s';
-            }, 10);
         } else {
             sidenav.style.width = "0";
             main.style.marginLeft = "0";

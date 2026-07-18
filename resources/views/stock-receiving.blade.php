@@ -96,6 +96,9 @@
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $delivery->delivery_date?->format('M d, Y') ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $delivery->remarks ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
+                                @error("del_action_{$delivery->id}")
+                                    <p style="color:#ef4444;font-size:11px;margin:0 0 6px 0;">{{ $message }}</p>
+                                @enderror
                                 @if(!$isProcessed)
                             <button onclick="openApproveModal({{ $delivery->id }}, {{ $existingSkus[$delivery->shipment_number] ?? false ? 'true' : 'false' }})" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Approve</button>
                                     <button onclick="openRejectModal({{ $delivery->id }})" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">Reject</button>

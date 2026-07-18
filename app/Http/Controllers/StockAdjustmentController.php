@@ -51,16 +51,22 @@ class StockAdjustmentController extends Controller
             ->value('net') ?? 0;
         $pendingCount = StockAdjustment::where('status', 'pending')->count();
 
-        $itemsByWarehouse = StockLevel::with('item')
-            ->get()
+        $stockLevels = StockLevel::with('item')->get();
+
+        $itemsByWarehouse = $stockLevels
             ->groupBy('warehouse_id')
             ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+
+        $stockMap = $stockLevels->mapWithKeys(
+            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock]
+        );
 
         return view('stock-adjustments', [
             'adjustments' => $adjustments,
             'warehouses' => Warehouse::all(),
             'items' => Item::all(),
             'itemsByWarehouse' => $itemsByWarehouse,
+            'stockMap' => $stockMap,
             'filters' => $request->only(['search', 'type', 'reason', 'warehouse', 'status']),
             'totalCount' => $totalCount,
             'netAdjustedUnits' => $netAdjustedUnits,
@@ -80,9 +86,22 @@ class StockAdjustmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        if ($validated['type'] === 'decrease') {
+            $stockLevel = StockLevel::where('item_id', $validated['item_id'])
+                ->where('warehouse_id', $validated['warehouse_id'])
+                ->first();
+
+            if (!$stockLevel || $stockLevel->stock < $validated['quantity']) {
+                $available = $stockLevel?->stock ?? 0;
+                return back()->withInput()->withErrors([
+                    'quantity' => "Insufficient stock. Only {$available} units available."
+                ]);
+            }
+        }
+
         $validated['status'] = 'pending';
         $validated['requested_by'] = Auth::id();
-        $adjustment = StockAdjustment::create($validated);
+        StockAdjustment::create($validated);
 
         return back()->with('success', 'Adjustment request submitted for approval.');
     }
@@ -90,11 +109,11 @@ class StockAdjustmentController extends Controller
     public function approve(StockAdjustment $adjustment)
     {
         if ($adjustment->status !== 'pending') {
-            return back()->with('error', 'This adjustment has already been processed.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'This adjustment has already been processed.']);
         }
 
         if ($adjustment->requested_by === Auth::id()) {
-            return back()->with('error', 'You cannot approve your own adjustment request.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'You cannot approve your own adjustment request.']);
         }
 
         $result = $this->executeApproval($adjustment);
@@ -103,7 +122,7 @@ class StockAdjustmentController extends Controller
             return back()->with('success', 'Adjustment approved and stock updated.');
         }
 
-        return back()->with('error', $result);
+        return back()->withErrors(["adj_action_{$adjustment->id}" => $result]);
     }
 
     private function executeApproval(StockAdjustment $adjustment): true|string
@@ -163,11 +182,11 @@ class StockAdjustmentController extends Controller
     public function reject(StockAdjustment $adjustment)
     {
         if ($adjustment->status !== 'pending') {
-            return back()->with('error', 'This adjustment has already been processed.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'This adjustment has already been processed.']);
         }
 
         if ($adjustment->requested_by === Auth::id()) {
-            return back()->with('error', 'You cannot reject your own adjustment request.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'You cannot reject your own adjustment request.']);
         }
 
         $adjustment->update([
@@ -180,11 +199,11 @@ class StockAdjustmentController extends Controller
     public function cancel(StockAdjustment $adjustment)
     {
         if ($adjustment->status !== 'pending') {
-            return back()->with('error', 'Only pending adjustments can be cancelled.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'Only pending adjustments can be cancelled.']);
         }
 
         if ($adjustment->requested_by !== Auth::id()) {
-            return back()->with('error', 'You can only cancel your own adjustment requests.');
+            return back()->withErrors(["adj_action_{$adjustment->id}" => 'You can only cancel your own adjustment requests.']);
         }
 
         $adjustment->update(['status' => 'cancelled']);

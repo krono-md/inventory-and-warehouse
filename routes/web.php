@@ -36,8 +36,7 @@ Route::middleware('auth')->group(function () {
     // Stock Movement
     Route::get('/stock-movement', [StockMovementController::class, 'index'])->name('stock-movement');
 
-    // Stock Levels
-    Route::get('/stock-levels', fn () => redirect()->route('item-catalog'))->name('stock-levels');
+    // Stock Levels table update
     Route::patch('/stock-levels/{stockLevel}', [StockLevelController::class, 'update'])->name('stock-levels.update');
 
     // Stock Adjustments

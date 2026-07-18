@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class WarehouseController extends Controller
 {
@@ -40,7 +41,7 @@ class WarehouseController extends Controller
 
     public function update(Request $request, Warehouse $warehouse)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'province' => 'required|string|max:100',
             'city' => 'required|string|max:100',
@@ -50,7 +51,13 @@ class WarehouseController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        $warehouse->update($validated);
+        if ($validator->fails()) {
+            return redirect()->route('warehouse', ['edit' => $warehouse->id])
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $warehouse->update($validator->validated());
 
         return redirect()->route('warehouse')->with('success', 'Warehouse updated successfully.');
     }

@@ -211,23 +211,28 @@
                 <div class="nexora-modal-form">
                     <div>
                         <label class="nexora-modal-label">Warehouse Name</label>
-                        <input type="text" name="name" id="edit_name" class="nexora-modal-input" required>
+                        <input type="text" name="name" id="edit_name" value="{{ old('name') }}" class="nexora-modal-input" required>
+                        @error('name')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Capacity (Units)</label>
-                        <input type="number" name="capacity_units" id="edit_capacity_units" min="1" class="nexora-modal-input" required>
+                        <input type="number" name="capacity_units" id="edit_capacity_units" value="{{ old('capacity_units') }}" min="1" class="nexora-modal-input" required>
+                        @error('capacity_units')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Province</label>
-                        <input type="text" name="province" id="edit_province" class="nexora-modal-input" required>
+                        <input type="text" name="province" id="edit_province" value="{{ old('province') }}" class="nexora-modal-input" required>
+                        @error('province')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">City / Municipality</label>
-                        <input type="text" name="city" id="edit_city" class="nexora-modal-input" required>
+                        <input type="text" name="city" id="edit_city" value="{{ old('city') }}" class="nexora-modal-input" required>
+                        @error('city')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Address</label>
-                        <input type="text" name="address_description" id="edit_address" class="nexora-modal-input">
+                        <input type="text" name="address_description" id="edit_address" value="{{ old('address_description') }}" class="nexora-modal-input">
+                        @error('address_description')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Country</label>
@@ -236,13 +241,15 @@
                     <div>
                         <label class="nexora-modal-label">Status</label>
                         <select name="status" id="edit_status" class="nexora-modal-select" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
+                        @error('status')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Barangay</label>
-                        <input type="text" name="barangay" id="edit_barangay" class="nexora-modal-input">
+                        <input type="text" name="barangay" id="edit_barangay" value="{{ old('barangay') }}" class="nexora-modal-input">
+                        @error('barangay')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
@@ -340,9 +347,20 @@
         spinner.style.display = 'inline-block';
     });
 
-    // Open modal if validation errors exist
-    @if($errors->any())
+    // Open add modal if validation errors exist
+    @if($errors->any() && !request()->has('edit'))
         openModal();
     @endif
+
+    // Auto-open edit modal and set form action when ?edit=ID is present
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var editId = params.get('edit');
+        if (editId) {
+            editForm.action = '/warehouse/' + editId;
+            editModal.style.opacity = '1';
+            editModal.style.pointerEvents = 'auto';
+        }
+    })();
 </script>
 @endpush

@@ -133,6 +133,9 @@
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->approver?->name ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->created_at->format('M d, Y') }}</td>
                             <td style="text-align:center;padding:12px 8px;">
+                                @error("adj_action_{$adjustment->id}")
+                                    <p style="color:#ef4444;font-size:11px;margin:0 0 6px 0;">{{ $message }}</p>
+                                @enderror
                                 @if($adjustment->status === 'pending')
                                     @if($adjustment->requested_by !== Auth::id())
                                         <form method="POST" action="{{ route('stock-adjustments.approve', $adjustment) }}" style="display:inline;" onsubmit="return confirm('Approve this adjustment?')">
@@ -227,7 +230,8 @@
 
                     <div>
                         <label class="nexora-modal-label">Quantity</label>
-                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" class="nexora-modal-input" placeholder="e.g. 50" required>
+                        <input type="number" name="quantity" id="adjustment_quantity" value="{{ old('quantity') }}" min="1" class="nexora-modal-input" placeholder="e.g. 50" required>
+                        <span id="stock_indicator" style="font-size:11px;color:#64748b;display:none;margin-top:4px;"></span>
                         @error('quantity')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
@@ -249,20 +253,51 @@
 @push('scripts')
 <script>
     const adjModal = document.getElementById('adjustmentModal');
-    function openAdjustmentModal() { adjModal.classList.add('open'); }
-    function closeAdjustmentModal() { adjModal.classList.remove('open'); }
-    adjModal.addEventListener('click', function(e) { if (e.target === this) closeAdjustmentModal(); });
+    window.openAdjustmentModal = function() { adjModal.classList.add('open'); };
+    window.closeAdjustmentModal = function() { adjModal.classList.remove('open'); };
+    if (adjModal) adjModal.addEventListener('click', function(e) { if (e.target === this) window.closeAdjustmentModal(); });
 
     @if($errors->any())
-        openAdjustmentModal();
+        window.openAdjustmentModal();
     @endif
 
+    const stockMap = @json($stockMap);
     const itemsByWarehouse = @json($itemsByWarehouse);
     const allItems = @json($items);
     const warehouseSelect = document.getElementById('warehouse_id');
     const itemSelect = document.getElementById('item_id');
+    const typeSelect = document.querySelector('#adjustmentModal select[name="type"]');
+    const quantityInput = document.getElementById('adjustment_quantity');
+    const stockIndicator = document.getElementById('stock_indicator');
 
-    function filterItemsByWarehouse() {
+    function getCurrentStock() {
+        const wh = warehouseSelect.value;
+        const item = itemSelect.value;
+        if (wh && item) {
+            return stockMap[wh + '-' + item] ?? null;
+        }
+        return null;
+    }
+
+    function clamp() {
+        const stock = getCurrentStock();
+        const type = typeSelect.value;
+        if (stock !== null && type === 'decrease') {
+            const val = parseInt(quantityInput.value);
+            if (!isNaN(val) && val > stock) {
+                quantityInput.value = stock;
+            }
+        }
+    }
+
+    function updateIndicator() {
+        const stock = getCurrentStock();
+        stockIndicator.textContent = stock !== null ? 'Stock available: ' + stock : '';
+        stockIndicator.style.display = stock !== null ? 'block' : 'none';
+        clamp();
+    }
+
+    function filterItems() {
         const warehouseId = warehouseSelect.value;
         const currentItemId = itemSelect.value;
 
@@ -288,11 +323,17 @@
         if (warehouseId && availableItems.length === 0) {
             itemSelect.innerHTML = '<option value="">No items in this warehouse</option>';
         }
+
+        updateIndicator();
     }
 
-    warehouseSelect.addEventListener('change', filterItemsByWarehouse);
+    warehouseSelect.addEventListener('change', filterItems);
+    itemSelect.addEventListener('change', updateIndicator);
+    typeSelect.addEventListener('change', updateIndicator);
+    quantityInput.addEventListener('input', clamp);
+    quantityInput.addEventListener('change', clamp);
 
     // Run once on load in case old() has a value selected
-    filterItemsByWarehouse();
+    filterItems();
 </script>
 @endpush

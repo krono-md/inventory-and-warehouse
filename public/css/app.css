@@ -2,7 +2,7 @@
 .sidenav {
   /* Calculate height: 100% of the viewport minus the 62px header minus some gap */
   height: calc(100vh - 102px); 
-  width: 0; 
+  width: var(--sidebar-width, 0); 
   position: fixed; 
   z-index: 1; 
   /* Push it down below your sticky header (62px) + a 20px gap */
@@ -138,6 +138,7 @@
   padding: 10px 12px;
   display: flex;
   overflow: hidden; /* Prevents horizontal scroll when sidenav is open */
+  margin-left: var(--sidebar-ml, 0px);
 }
 
 /* Extra left clearance when the sidebar is expanded */
@@ -835,5 +836,31 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
   }
+}
+
+/* Warehouse grid / list views */
+#warehouseContainer.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  #warehouseContainer.grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  #warehouseContainer.grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1280px) {
+  #warehouseContainer.grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+#warehouseContainer.flex {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.items-stretch {
+  align-items: stretch;
 }
 

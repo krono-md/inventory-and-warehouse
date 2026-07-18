@@ -43,17 +43,23 @@ class StockTransferController extends Controller
         $pendingCount = StockTransfer::where('status', 'pending')->count();
         $approvedCount = StockTransfer::where('status', 'approved')->count();
 
-        $itemsByWarehouse = StockLevel::with('item')
+        $stockLevels = StockLevel::with('item')->get();
+
+        $itemsByWarehouse = $stockLevels
             ->where('stock', '>', 0)
-            ->get()
             ->groupBy('warehouse_id')
             ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+
+        $stockMap = $stockLevels->mapWithKeys(
+            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock]
+        );
 
         return view('stock-transfers', [
             'transfers' => $transfers,
             'warehouses' => Warehouse::all(),
             'items' => Item::all(),
             'itemsByWarehouse' => $itemsByWarehouse,
+            'stockMap' => $stockMap,
             'filters' => $request->only(['search', 'status', 'from_warehouse', 'to_warehouse']),
             'totalCount' => $totalCount,
             'pendingCount' => $pendingCount,
@@ -101,11 +107,11 @@ class StockTransferController extends Controller
     public function approve(StockTransfer $transfer)
     {
         if ($transfer->status !== 'pending') {
-            return back()->with('error', 'This transfer has already been processed.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'This transfer has already been processed.']);
         }
 
         if ($transfer->requested_by_user_id === Auth::id()) {
-            return back()->with('error', 'You cannot approve your own transfer request.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'You cannot approve your own transfer request.']);
         }
 
         $result = $this->executeApproval($transfer);
@@ -114,7 +120,7 @@ class StockTransferController extends Controller
             return back()->with('success', 'Transfer approved and stock moved.');
         }
 
-        return back()->with('error', $result);
+        return back()->withErrors(["trf_action_{$transfer->id}" => $result]);
     }
 
     private function executeApproval(StockTransfer $transfer): true|string
@@ -200,11 +206,11 @@ class StockTransferController extends Controller
     public function reject(StockTransfer $transfer)
     {
         if ($transfer->status !== 'pending') {
-            return back()->with('error', 'This transfer has already been processed.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'This transfer has already been processed.']);
         }
 
         if ($transfer->requested_by_user_id === Auth::id()) {
-            return back()->with('error', 'You cannot reject your own transfer request.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'You cannot reject your own transfer request.']);
         }
 
         $transfer->update(['status' => 'rejected']);
@@ -215,11 +221,11 @@ class StockTransferController extends Controller
     public function cancel(StockTransfer $transfer)
     {
         if ($transfer->status !== 'pending') {
-            return back()->with('error', 'Only pending transfers can be cancelled.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'Only pending transfers can be cancelled.']);
         }
 
         if ($transfer->requested_by_user_id !== Auth::id()) {
-            return back()->with('error', 'You can only cancel your own transfer requests.');
+            return back()->withErrors(["trf_action_{$transfer->id}" => 'You can only cancel your own transfer requests.']);
         }
 
         $transfer->update(['status' => 'cancelled']);

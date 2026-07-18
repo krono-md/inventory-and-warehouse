@@ -120,6 +120,9 @@
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->approver?->username ?? $transfer->approver?->name ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->created_at->format('M d, Y') }}</td>
                             <td style="text-align:center;padding:12px 8px;">
+                                @error("trf_action_{$transfer->id}")
+                                    <p style="color:#ef4444;font-size:11px;margin:0 0 6px 0;">{{ $message }}</p>
+                                @enderror
                                 @if($transfer->status === 'pending')
                                     @if($transfer->requested_by_user_id !== Auth::id())
                                         <form method="POST" action="{{ route('stock-transfers.approve', $transfer) }}" style="display:inline;" onsubmit="return confirm('Approve this transfer?')">
@@ -203,7 +206,8 @@
 
                     <div>
                         <label class="nexora-modal-label">Quantity</label>
-                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" class="nexora-modal-input" placeholder="e.g. 50" required>
+                        <input type="number" name="quantity" id="transfer_quantity" value="{{ old('quantity') }}" min="1" class="nexora-modal-input" placeholder="e.g. 50" required>
+                        <span id="transfer_stock_indicator" style="font-size:11px;color:#64748b;display:none;margin-top:4px;"></span>
                         @error('quantity')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
@@ -233,10 +237,44 @@
         openTransferModal();
     @endif
 
+    const stockMap = @json($stockMap ?? []);
     const itemsByWarehouse = @json($itemsByWarehouse);
     const allItems = @json($items);
     const fromWarehouseSelect = document.getElementById('from_warehouse_id');
     const itemSelect = document.getElementById('item_id');
+    const transferQuantity = document.getElementById('transfer_quantity');
+    const transferStockIndicator = document.getElementById('transfer_stock_indicator');
+
+    function getTransferStock() {
+        const wh = fromWarehouseSelect.value;
+        const item = itemSelect.value;
+        if (wh && item) {
+            return stockMap[wh + '-' + item] ?? null;
+        }
+        return null;
+    }
+
+    function clampTransferQuantity() {
+        const stock = getTransferStock();
+        if (stock !== null) {
+            const val = parseInt(transferQuantity.value);
+            if (!isNaN(val) && val > stock) {
+                transferQuantity.value = stock;
+            }
+        }
+    }
+
+    function updateTransferIndicator() {
+        const stock = getTransferStock();
+
+        if (stock !== null) {
+            transferStockIndicator.textContent = 'Stock available: ' + stock;
+            transferStockIndicator.style.display = 'block';
+        } else {
+            transferStockIndicator.style.display = 'none';
+        }
+        clampTransferQuantity();
+    }
 
     function filterItemsByWarehouse() {
         const warehouseId = fromWarehouseSelect.value;
@@ -264,9 +302,14 @@
         if (warehouseId && availableItems.length === 0) {
             itemSelect.innerHTML = '<option value="">No stock available in this warehouse</option>';
         }
+
+        updateTransferIndicator();
     }
 
     fromWarehouseSelect.addEventListener('change', filterItemsByWarehouse);
+    itemSelect.addEventListener('change', updateTransferIndicator);
+    transferQuantity.addEventListener('input', clampTransferQuantity);
+    transferQuantity.addEventListener('change', clampTransferQuantity);
 
     // Run once on load in case old() has a value selected
     filterItemsByWarehouse();

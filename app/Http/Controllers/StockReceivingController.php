@@ -103,7 +103,11 @@ class StockReceivingController extends Controller
             return back()->with('success', 'Delivery approved and stock updated.');
         }
 
-        return back()->with('error', $result);
+        if ($result === 'Category is required for new items.') {
+            return back()->withErrors(['category_id' => $result])->withInput();
+        }
+
+        return back()->withErrors(["del_action_{$delivery->id}" => $result]);
     }
 
     private function executeApproval(Procurement $delivery, array $validated): true|string
@@ -118,7 +122,7 @@ class StockReceivingController extends Controller
             $product = $delivery->getSupplierProduct();
 
             if (!$product) {
-                return 'Could not fetch product data from procurement.';
+                return 'Could not fetch delivery from procurement.';
             }
 
             // Try to match existing item by SKU, or create new one
@@ -167,7 +171,7 @@ class StockReceivingController extends Controller
                 'warehouse_id' => $validated['warehouse_id'],
                 'quantity' => $delivery->qty,
                 'reference' => $delivery->shipment_number,
-                'notes' => "Stock received from procurement - Shipment: {$delivery->shipment_number}",
+                'notes' => "From delivery - Shipment: {$delivery->shipment_number}",
                 'performed_by' => Auth::id(),
                 'created_at' => now(),
             ]);
@@ -219,6 +223,6 @@ class StockReceivingController extends Controller
             return back()->with('success', 'Delivery rejected.');
         }
 
-        return back()->with('error', $result);
+        return back()->withErrors(["del_action_{$delivery->id}" => $result]);
     }
 }
