@@ -19,7 +19,7 @@ class StockReceivingController extends Controller
     public function index(Request $request)
     {
         // Fetch deliveries from procurement database with status 'pending' or 'in transit'
-        $query = Procurement::whereIn('status', ['pending', 'in transit'])
+        $query = Procurement::whereIn('status', ['pending', 'intransit'])
             ->orderByDesc('created_at');
 
         if ($search = $request->input('search')) {
@@ -50,7 +50,7 @@ class StockReceivingController extends Controller
             ->toArray();
 
         // For kpi cards
-        $pendingCount = Procurement::whereIn('status', ['pending', 'in transit'])->count();
+        $pendingCount = Procurement::whereIn('status', ['pending', 'intransit'])->count();
         $receivedTodayCount = StockReceiving::whereDate('processed_at', today())
             ->where('status', 'approved')
             ->count();
@@ -100,6 +100,12 @@ class StockReceivingController extends Controller
             }
         }
 
+        // Audit trail — past approved/rejected records
+        $history = StockReceiving::with(['item', 'warehouse', 'processor'])
+            ->orderByDesc('processed_at')
+            ->limit(50)
+            ->get();
+
         return view('stock-receiving', [
             'deliveries' => $deliveries,
             'deliveryProcessed' => $deliveryProcessed,
@@ -109,6 +115,7 @@ class StockReceivingController extends Controller
             'pendingCount' => $pendingCount,
             'receivedTodayCount' => $receivedTodayCount,
             'rejectedCount' => $rejectedCount,
+            'history' => $history,
             'filters' => $request->only(['search', 'status']),
             'activePage' => 'stock-receiving',
         ]);
