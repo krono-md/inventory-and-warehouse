@@ -113,11 +113,6 @@ class StockReceivingController extends Controller
     private function executeApproval(Procurement $delivery, array $validated): true|string
     {
         return DB::transaction(function () use ($delivery, $validated) {
-            // Check if already processed INSIDE transaction to prevent race condition
-            if (StockReceiving::where('shipment_number', $delivery->shipment_number)->exists()) {
-                return 'This delivery has already been processed.';
-            }
-
             // Fetch procurement product data (sku, name, unit_price)
             $product = $delivery->getSupplierProduct();
 
@@ -141,22 +136,34 @@ class StockReceivingController extends Controller
                 ]);
             }
 
-            // Get or create stock level for this item and warehouse
-            $stockLevel = StockLevel::firstOrCreate(
-                [
+            // Lock the stock level row FIRST — this is the serialization point.
+            // Any concurrent request for the same item+warehouse will wait here.
+            $stockLevel = StockLevel::where('item_id', $item->id)
+                ->where('warehouse_id', $validated['warehouse_id'])
+                ->lockForUpdate()
+                ->first();
+
+            $isNew = false;
+
+            if (!$stockLevel) {
+                $stockLevel = StockLevel::create([
                     'item_id' => $item->id,
                     'warehouse_id' => $validated['warehouse_id'],
-                ],
-                [
+                    'stock' => 0,
                     'reorder_threshold' => 10,
-                ]
-            );
+                ]);
+                $isNew = true;
+            }
 
-            $stockLevel->notification_source = 'receiving';
+            // NOW check if already processed — safe because we hold the exclusive lock.
+            if (StockReceiving::where('shipment_number', $delivery->shipment_number)->where('item_id', $item->id)->exists()) {
+                return 'This delivery has already been processed.';
+            }
 
-            if ($stockLevel->wasRecentlyCreated) {
+            if ($isNew) {
                 $stockLevel->update(['stock' => $delivery->qty]);
             } else {
+                $stockLevel->notification_source = 'receiving';
                 $stockLevel->increment('stock', $delivery->qty);
             }
 

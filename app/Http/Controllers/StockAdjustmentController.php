@@ -58,7 +58,7 @@ class StockAdjustmentController extends Controller
             ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
 
         $stockMap = $stockLevels->mapWithKeys(
-            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock]
+            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock - $sl->reserved_quantity]
         );
 
         return view('stock-adjustments', [
@@ -91,10 +91,17 @@ class StockAdjustmentController extends Controller
                 ->where('warehouse_id', $validated['warehouse_id'])
                 ->first();
 
-            if (!$stockLevel || $stockLevel->stock < $validated['quantity']) {
-                $available = $stockLevel?->stock ?? 0;
+            if (!$stockLevel) {
                 return back()->withInput()->withErrors([
-                    'quantity' => "Insufficient stock. Only {$available} units available."
+                    'quantity' => 'No stock record found for this item in the selected warehouse.'
+                ]);
+            }
+
+            $available = $stockLevel->stock - $stockLevel->reserved_quantity;
+
+            if ($available < $validated['quantity']) {
+                return back()->withInput()->withErrors([
+                    'quantity' => "Insufficient available stock. Only {$available} units available (stock: {$stockLevel->stock}, reserved: {$stockLevel->reserved_quantity})."
                 ]);
             }
         }
@@ -150,8 +157,12 @@ class StockAdjustmentController extends Controller
                 return 'No stock level record exists for this item and warehouse combination.';
             }
 
-            if ($adjustment->type === 'decrease' && $stockLevel->stock < $adjustment->quantity) {
-                return "Insufficient stock. Only {$stockLevel->stock} units available.";
+            if ($adjustment->type === 'decrease') {
+                $available = $stockLevel->stock - $stockLevel->reserved_quantity;
+
+                if ($available < $adjustment->quantity) {
+                    return "Insufficient available stock. Only {$available} units available (stock: {$stockLevel->stock}, reserved: {$stockLevel->reserved_quantity}).";
+                }
             }
 
             $stockLevel->notification_source = 'inventory';

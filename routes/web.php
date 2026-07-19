@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 // Auth (public)
 Route::get('/', [AuthController::class, 'showLogin'])->name('signin');
+Route::get('/signin', [AuthController::class, 'showLogin'])->name('signin.get');
 Route::post('/signin', [AuthController::class, 'login'])->name('signin.authenticate');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/contact-us', fn () => view('contactus'))->name('contactus');
@@ -32,6 +33,8 @@ Route::middleware('auth')->group(function () {
 
     // Item Catalog
     Route::get('/item-catalog', [ItemCatalogController::class, 'index'])->name('item-catalog');
+    Route::post('/item-catalog', [ItemCatalogController::class, 'store'])->name('item-catalog.store');
+    Route::delete('/item-catalog/{item}', [ItemCatalogController::class, 'destroy'])->name('item-catalog.destroy');
 
     // Stock Movement
     Route::get('/stock-movement', [StockMovementController::class, 'index'])->name('stock-movement');

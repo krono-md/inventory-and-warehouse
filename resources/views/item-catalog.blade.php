@@ -53,9 +53,12 @@
 
 <!-- Inventory Items Card -->
 <div style="background:#ffffff;border-radius:20px;overflow:hidden;min-width:0;">
-    <!-- Header: Title + Search + Filters -->
+    <!-- Header: Title + Add Button + Search + Filters -->
     <form method="GET" action="{{ route('item-catalog') }}" class="responsive-flex" style="padding:20px 24px 16px 24px;">
-        <h2 style="font-size:18px;font-weight:700;color:#000;white-space:nowrap;margin-right:8px;">Inventory Items</h2>
+        <div style="display:flex;align-items:center;gap:8px;white-space:nowrap;margin-right:8px;">
+            <h2 style="font-size:18px;font-weight:700;color:#000;">Inventory Items</h2>
+            <button type="button" onclick="document.getElementById('addItemModal').style.display='flex'" style="background:#1b6fc8;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">+ Add Item</button>
+        </div>
         <!-- Search -->
         <div style="display:flex;align-items:center;background:#E2E8F0;border-radius:8px;padding:8px 14px;gap:8px;flex:1;min-width:150px;">
             <svg width="16" height="16" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
@@ -103,6 +106,7 @@
                     <th data-sort="quantity" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">TOTAL STOCK <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="unit_cost" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">UNIT COST <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
                     <th data-sort="status" style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">STATUS <span class="sort-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.5l-6.5 7h13L12 3.5z"/><path d="M12 20.5l6.5-7h-13l6.5 7z"/></svg></span></th>
+                    <th style="text-align:center;padding:12px 4px;color:#fff;font-size:12px;font-weight:600;">ACTIONS</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,15 +133,23 @@
                         @endphp
                         <span style="background:{{ $colors['bg'] }};color:{{ $colors['text'] }};font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;">{{ data_get($item, 'status') }}</span>
                     </td>
+                    <td style="text-align:center;padding:12px 4px;">
+                        <form method="POST" action="{{ route('item-catalog.destroy', data_get($item, 'id')) }}" onsubmit="return confirm('Delete this item permanently? This will remove all stock records.')" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:13px;padding:4px 8px;" title="Delete item">🗑</button>
+                        </form>
+                    </td>
                 </tr>
                 <!-- Expandable per-warehouse breakdown -->
                 <tr class="expand-row" id="expand-{{ $loop->index }}">
-                    <td colspan="7" style="padding:0 16px 16px 40px;background:#f8fafc;">
+                    <td colspan="8" style="padding:0 16px 16px 40px;background:#f8fafc;">
                         <table style="width:100%;border-collapse:collapse;margin-top:4px;">
                             <thead>
                                 <tr style="border-bottom:2px solid #e2e8f0;">
                                     <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Warehouse</th>
-                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Stock</th>
+                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Available</th>
+                                    <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Reserved</th>
                                     <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Reorder Threshold</th>
                                     <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;">Status</th>
                                 </tr>
@@ -147,6 +159,7 @@
                                 <tr style="border-bottom:1px solid #e2e8f0; background:#ffffff;">
                                     <td style="padding:8px 10px;font-size:12px;color:#0f172a;">{{ $row['warehouse'] }}</td>
                                     <td style="text-align:center;padding:8px 10px;font-size:12px;color:#0f172a;font-weight:600;">{{ $row['on_hand'] }}</td>
+                                    <td style="text-align:center;padding:8px 10px;font-size:12px;color:#dc2626;">{{ $row['reserved'] }}</td>
                                     <td style="text-align:center;padding:6px 10px;" onclick="event.stopPropagation()">
                                         <form method="POST" action="{{ route('stock-levels.update', $row['stock_level_id']) }}" style="display:inline-flex;align-items:center;gap:4px;">
                                             @csrf
@@ -169,7 +182,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">No stock records for this item.</td>
+                                    <td colspan="5" style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">No stock records for this item.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -178,7 +191,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">
+                    <td colspan="8" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">
                         No items found.
                     </td>
                 </tr>
@@ -190,7 +203,73 @@
 </div>
 @endsection
 
+<!-- Add Item Modal -->
+<div id="addItemModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#fff;border-radius:20px;padding:32px;width:480px;max-width:90vw;max-height:90vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:18px;font-weight:700;color:#000;margin:0;">Add New Item</h3>
+            <button type="button" onclick="document.getElementById('addItemModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+        </div>
+        <form method="POST" action="{{ route('item-catalog.store') }}">
+            @csrf
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div style="grid-column:span 2;">
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">SKU</label>
+                    <input type="text" name="sku" required style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                </div>
+                <div style="grid-column:span 2;">
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Item Name</label>
+                    <input type="text" name="name" required style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Category</label>
+                    <select name="category_id" required style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                        <option value="">Select...</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Unit Cost</label>
+                    <input type="number" name="unit_cost" step="0.01" min="0" required style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                </div>
+            </div>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+            <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0 0 12px 0;">Initial Stock (optional)</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Warehouse</label>
+                    <select name="warehouse_id" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                        <option value="">None</option>
+                        @foreach ($warehouses as $warehouse)
+                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Quantity</label>
+                    <input type="number" name="initial_stock" min="0" value="0" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">Reorder Threshold</label>
+                    <input type="number" name="reorder_threshold" min="0" value="10" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;">
+                </div>
+            </div>
+            <div style="margin-top:24px;display:flex;gap:8px;justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('addItemModal').style.display='none'" style="background:#e2e8f0;color:#475569;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
+                <button type="submit" style="background:#1b6fc8;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Create Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
+    @if(session('success'))
+    <script>
+        setTimeout(() => { document.getElementById('addItemModal')?.style.setProperty('display', 'none'); }, 100);
+    </script>
+    @endif
 <script>
     function toggleExpand(index) {
         const row = document.getElementById('expand-' + index);

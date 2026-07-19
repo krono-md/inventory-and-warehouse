@@ -9,13 +9,13 @@ class StockLevelObserver
 {
     public function updated(StockLevel $stockLevel): void
     {
-        if (!$stockLevel->wasChanged('stock') && !$stockLevel->wasChanged('reorder_threshold')) {
+        if (!$stockLevel->wasChanged('stock') && !$stockLevel->wasChanged('reserved_quantity') && !$stockLevel->wasChanged('reorder_threshold')) {
             return;
         }
 
-        $onHand = $stockLevel->stock;
+        $available = $stockLevel->stock - $stockLevel->reserved_quantity;
 
-        if ($onHand <= 0) {
+        if ($available <= 0) {
             $this->createOrUpdateNotification($stockLevel, 'out_of_stock');
         } elseif ($stockLevel->status === 'low_stock') {
             $this->createOrUpdateNotification($stockLevel, 'low_stock');

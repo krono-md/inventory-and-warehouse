@@ -46,12 +46,12 @@ class StockTransferController extends Controller
         $stockLevels = StockLevel::with('item')->get();
 
         $itemsByWarehouse = $stockLevels
-            ->where('stock', '>', 0)
+            ->filter(fn ($sl) => ($sl->stock - $sl->reserved_quantity) > 0)
             ->groupBy('warehouse_id')
             ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
 
         $stockMap = $stockLevels->mapWithKeys(
-            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock]
+            fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock - $sl->reserved_quantity]
         );
 
         return view('stock-transfers', [
@@ -89,9 +89,11 @@ class StockTransferController extends Controller
                 ->withInput();
         }
 
-        if ($stockLevel->stock < $validated['quantity']) {
+        $available = $stockLevel->stock - $stockLevel->reserved_quantity;
+
+        if ($available < $validated['quantity']) {
             return back()
-                ->withErrors(['quantity' => "Insufficient stock in source warehouse. Only {$stockLevel->stock} units available."])
+                ->withErrors(['quantity' => "Insufficient available stock in source warehouse. Only {$available} units available (stock: {$stockLevel->stock}, reserved: {$stockLevel->reserved_quantity})."])
                 ->withInput();
         }
 
@@ -159,8 +161,10 @@ class StockTransferController extends Controller
                 return 'No stock level record exists for the source warehouse.';
             }
 
-            if ($source->stock < $transfer->quantity) {
-                return "Insufficient stock in source warehouse. Only {$source->stock} units available.";
+            $available = $source->stock - $source->reserved_quantity;
+
+            if ($available < $transfer->quantity) {
+                return "Insufficient available stock in source warehouse. Only {$available} units available (stock: {$source->stock}, reserved: {$source->reserved_quantity}).";
             }
 
             if (!$destination) {

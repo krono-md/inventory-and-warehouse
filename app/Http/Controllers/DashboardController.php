@@ -9,6 +9,7 @@ use App\Models\StockMovement;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -19,7 +20,7 @@ class DashboardController extends Controller
         $movements = StockMovement::with(['item', 'warehouse'])->orderByDesc('created_at')->take(7)->get();
 
         $totalItems = $items->count();
-        $totalStockUnits = StockLevel::sum('stock');
+        $totalStockUnits = StockLevel::sum(DB::raw('GREATEST(stock - reserved_quantity, 0)'));
         $lowStockAlerts = Notification::where('status', 'open')->count();
 
         $criticalAlerts = Notification::with(['item', 'warehouse'])
@@ -38,7 +39,7 @@ class DashboardController extends Controller
                     'name' => $notification->item->name,
                     'warehouse' => $notification->warehouse->name,
                     'type' => $notification->type,
-                    'on_hand' => $stockLevel?->stock ?? 0,
+                    'on_hand' => $stockLevel ? ($stockLevel->stock - $stockLevel->reserved_quantity) : 0,
                     'threshold' => $stockLevel?->reorder_threshold ?? 0,
                 ];
             });
@@ -48,7 +49,7 @@ class DashboardController extends Controller
         $warehouseDistribution = $warehouses->map(function ($w) {
             return [
                 'name' => $w->name,
-                'total' => $w->stockLevels()->sum('stock'),
+                'total' => $w->stockLevels()->sum(DB::raw('GREATEST(stock - reserved_quantity, 0)')),
             ];
         });
 
