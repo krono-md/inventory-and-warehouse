@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\Notification;
 use App\Models\StockLevel;
 use App\Models\StockMovement;
 use App\Models\Warehouse;
@@ -21,26 +20,36 @@ class DashboardController extends Controller
 
         $totalItems = $items->count();
         $totalStockUnits = StockLevel::sum(DB::raw('GREATEST(stock - reserved_quantity, 0)'));
-        $lowStockAlerts = Notification::where('status', 'open')->count();
+        $lowStockAlerts = StockLevel::where(function ($q) {
+            $q->whereColumn('stock', '<=', 'reserved_quantity')
+              ->orWhere(function ($q2) {
+                  $q2->where('reorder_threshold', '>', 0)
+                     ->whereRaw('(stock - reserved_quantity) <= reorder_threshold');
+              });
+        })->count();
 
-        $criticalAlerts = Notification::with(['item', 'warehouse'])
-            ->whereIn('status', ['open', 'acknowledged'])
+        $criticalAlerts = StockLevel::with(['item', 'warehouse'])
+            ->whereHas('item')
             ->whereHas('warehouse')
-            ->orderByRaw("CASE WHEN type = 'out_of_stock' THEN 0 ELSE 1 END")
-            ->orderByDesc('created_at')
+            ->where(function ($q) {
+                $q->whereColumn('stock', '<=', 'reserved_quantity')
+                  ->orWhere(function ($q2) {
+                      $q2->where('reorder_threshold', '>', 0)
+                         ->whereRaw('(stock - reserved_quantity) <= reorder_threshold');
+                  });
+            })
+            ->orderByRaw("CASE WHEN stock <= reserved_quantity THEN 0 ELSE 1 END")
             ->take(10)
             ->get()
-            ->map(function ($notification) {
-                $stockLevel = StockLevel::where('item_id', $notification->item_id)
-                    ->where('warehouse_id', $notification->warehouse_id)
-                    ->first();
+            ->map(function ($stockLevel) {
+                $available = $stockLevel->stock - $stockLevel->reserved_quantity;
 
                 return [
-                    'name' => $notification->item->name,
-                    'warehouse' => $notification->warehouse->name,
-                    'type' => $notification->type,
-                    'on_hand' => $stockLevel ? ($stockLevel->stock - $stockLevel->reserved_quantity) : 0,
-                    'threshold' => $stockLevel?->reorder_threshold ?? 0,
+                    'name' => $stockLevel->item->name,
+                    'warehouse' => $stockLevel->warehouse->name,
+                    'type' => $available <= 0 ? 'out_of_stock' : 'low_stock',
+                    'on_hand' => max(0, $available),
+                    'threshold' => $stockLevel->reorder_threshold ?? 0,
                 ];
             });
 

@@ -163,7 +163,6 @@ class StockReceivingController extends Controller
             if ($isNew) {
                 $stockLevel->update(['stock' => $delivery->qty]);
             } else {
-                $stockLevel->notification_source = 'receiving';
                 $stockLevel->increment('stock', $delivery->qty);
             }
 

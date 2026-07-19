@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Observers\StockLevelObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[ObservedBy(StockLevelObserver::class)]
 class StockLevel extends Model
 {
     protected $fillable = [
@@ -21,8 +18,6 @@ class StockLevel extends Model
     protected $casts = [
         'reserved_quantity' => 'integer',
     ];
-
-    public string $notification_source = 'system';
 
     public function item(): BelongsTo
     {

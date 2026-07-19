@@ -165,8 +165,6 @@ class StockAdjustmentController extends Controller
                 }
             }
 
-            $stockLevel->notification_source = 'inventory';
-
             if ($adjustment->type === 'increase') {
                 $stockLevel->increment('stock', $adjustment->quantity);
             } else {

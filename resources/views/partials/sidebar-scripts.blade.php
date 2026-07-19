@@ -48,20 +48,10 @@
 
     function toggleProfileDropdown() {
         document.getElementById('profileDropdown').classList.toggle('open');
-        document.getElementById('notificationDropdown').classList.remove('open');
-    }
-
-    function toggleNotificationDropdown() {
-        document.getElementById('notificationDropdown').classList.toggle('open');
-        document.getElementById('profileDropdown').classList.remove('open');
     }
 
     document.addEventListener('click', function(e) {
-        const notifDrop = document.getElementById('notificationDropdown');
         const profDrop = document.getElementById('profileDropdown');
-        if (notifDrop && !e.target.closest('[onclick*="Notification"]') && !e.target.closest('#notificationDropdown')) {
-            notifDrop.classList.remove('open');
-        }
         if (profDrop && !e.target.closest('[onclick*="Profile"]') && !e.target.closest('#profileDropdown')) {
             profDrop.classList.remove('open');
         }

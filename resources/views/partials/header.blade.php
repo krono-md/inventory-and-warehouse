@@ -3,54 +3,6 @@
         <button type="button" onclick="toggleNav()" style="cursor:pointer;background:none;border:none;padding:0;"><img src="{{ asset('images/banner.png') }}" alt="Nexora logo" style="height:55px; width:auto;"></button>
     </div>
     <nav style="display:flex;align-items:center;gap:16px;margin-left:auto;">
-        <!-- Notification Bell -->
-        <div style="position:relative;">
-            <button type="button" onclick="toggleNotificationDropdown()" style="position:relative;width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#a8d1f7;border:none;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                </svg>
-                @php
-                    $headerNotifCount = \App\Models\Notification::where('status', 'open')->count();
-                @endphp
-                @if($headerNotifCount > 0)
-                    <span style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ $headerNotifCount > 9 ? '9+' : $headerNotifCount }}</span>
-                @endif
-            </button>
-
-            <!-- Notification Dropdown -->
-            <div id="notificationDropdown" class="notification-dropdown">
-                <div class="notification-dropdown-header">
-                    <span class="notification-dropdown-title">Notifications</span>
-                    @if($headerNotifCount > 0)
-                        <span class="notification-dropdown-count">{{ $headerNotifCount }} open</span>
-                    @endif
-                </div>
-                <div class="notification-dropdown-body">
-                    @php
-                        $headerNotifs = \App\Models\Notification::with(['item', 'warehouse'])->where('status', '!=', 'resolved')->orderByDesc('created_at')->take(8)->get();
-                    @endphp
-                    @forelse($headerNotifs as $notif)
-                        <div class="notification-dropdown-item">
-                            <div class="notification-dot {{ $notif->type === 'out_of_stock' ? 'notification-dot-out' : 'notification-dot-low' }}"></div>
-                            <div style="min-width:0;">
-                                <p class="notification-dropdown-item-title">{{ $notif->item->name }} <span style="color:#94a3b8;font-weight:400;">({{ $notif->item->sku ?? '—' }})</span></p>
-                                <p class="notification-dropdown-item-desc">{{ $notif->type === 'out_of_stock' ? 'Out of Stock' : 'Low Stock' }} at {{ $notif->warehouse?->name ?? 'Deleted' }}</p>
-                                <p class="notification-dropdown-item-time">{{ $notif->created_at->diffForHumans() }} &middot; {{ ucfirst($notif->triggered_by) }}</p>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="notification-dropdown-empty">
-                            No active notifications.
-                        </div>
-                    @endforelse
-                </div>
-                <a href="{{ route('notifications') }}" class="notification-dropdown-footer">
-                    View All Notifications
-                </a>
-            </div>
-        </div>
-
         <button type="button" onclick="toggleProfileDropdown()" id="profileTrigger" style="width:34px;height:34px;border-radius:50%;background:rgba(74,158,232,.15);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;padding:0;">
             <img src="{{ asset('images/avatar.png') }}" alt="User avatar" style="width:100%;height:100%;object-fit:cover;display:block;">
         </button>

@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemCatalogController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockLevelController;
 use App\Http\Controllers\StockMovementController;
@@ -54,11 +53,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/warehouse', [WarehouseController::class, 'store'])->name('warehouse.store');
     Route::patch('/warehouse/{warehouse}', [WarehouseController::class, 'update'])->name('warehouse.update');
     Route::delete('/warehouse/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
-
-    // Notifications
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
-    Route::patch('/notifications/{notification}/acknowledge', [NotificationController::class, 'acknowledge'])->name('notifications.acknowledge');
-    Route::patch('/notifications/{notification}/resolve', [NotificationController::class, 'resolve'])->name('notifications.resolve');
 
     // Stock Receiving
     Route::get('/stock-receiving', [StockReceivingController::class, 'index'])->name('stock-receiving');

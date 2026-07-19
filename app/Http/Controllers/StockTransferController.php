@@ -179,10 +179,8 @@ class StockTransferController extends Controller
             $reference = $transfer->reference;
             $now = now();
 
-            $source->notification_source = 'transfer';
             $source->decrement('stock', $transfer->quantity);
 
-            $destination->notification_source = 'transfer';
             $destination->increment('stock', $transfer->quantity);
 
             Warehouse::whereIn('id', [$transfer->from_warehouse_id, $transfer->to_warehouse_id])
