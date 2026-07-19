@@ -93,7 +93,7 @@ class StockMovementController extends Controller
             'transfer' => StockMovement::where('type', 'transfer')->sum('quantity') / 2,
             'adjustment' => StockMovement::where('type', 'adjustment')->sum('quantity'),
         ];
-        $totals['net'] = $totals['inbound'] - $totals['outbound'] + $totals['adjustment'];
+        $totals['net'] = $totals['inbound'] + $totals['outbound'] + $totals['adjustment'];
 
         return view('stock-movement', [
             'movements' => $movements,

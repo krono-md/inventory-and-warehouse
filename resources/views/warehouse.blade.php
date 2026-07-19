@@ -57,14 +57,10 @@
         @forelse($warehouses as $warehouse)
             <div class="warehouse-card" style="display:flex;flex-direction:column;height:100%;" data-id="{{ data_get($warehouse, 'id') }}">
                 <!-- Card Header -->
-                <div style="background:#0b1e3d;border-radius:16px 16px 0 0;padding:14px 16px;height:86px;overflow:hidden;flex-shrink:0;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;height:100%;">
-                        <div style="min-width:0;display:flex;flex-direction:column;justify-content:center;height:100%;">
+                <div style="background:#0b1e3d;border-radius:16px 16px 0 0;padding:14px 16px;flex-shrink:0;">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                        <div style="min-width:0;display:flex;flex-direction:column;justify-content:center;">
                             <p style="font-size:15px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ data_get($warehouse, 'name') }}</p>
-                            <p style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:4px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                <svg width="10" height="12" fill="#94a3b8" viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 110 128 64 64 0 010-128z"/></svg>
-                                {{ data_get($warehouse, 'city') }}, {{ data_get($warehouse, 'province') }}
-                            </p>
                         </div>
                         <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;background:rgba(34,197,94,0.12);color:#22c55e;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">
                             <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
@@ -95,10 +91,12 @@
                     <div class="capacity-track">
                         <div class="capacity-bar" style="width:{{ data_get($warehouse, 'capacity_percentage') }}%;"></div>
                     </div>
+                    @if(data_get($warehouse, 'address'))
+                        <p style="font-size:11px;color:#64748b;margin-top:12px;">{{ data_get($warehouse, 'address') }}</p>
+                    @endif
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
-                        
                         <div style="display:flex;gap:6px;">
-                            <button onclick="openEditModal({{ $warehouse->id }}, '{{ addslashes($warehouse->name) }}', {{ $warehouse->capacity_units }}, '{{ addslashes($warehouse->province) }}', '{{ addslashes($warehouse->city) }}', '{{ addslashes($warehouse->address_description ?? '') }}', '{{ $warehouse->status }}', '{{ addslashes($warehouse->barangay ?? '') }}')" style="background:transparent;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;display:flex;align-items:center;" title="Edit">
+                            <button onclick="openEditModal({{ $warehouse->id }}, '{{ addslashes($warehouse->name) }}', {{ $warehouse->capacity_units }}, '{{ addslashes($warehouse->address ?? '') }}', '{{ $warehouse->status }}')" style="background:transparent;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;display:flex;align-items:center;" title="Edit">
                                 <svg width="14" height="14" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </button>
                             <form method="POST" action="{{ route('warehouse.destroy', $warehouse) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to deactivate this warehouse?')">
@@ -145,26 +143,9 @@
                     </div>
 
                     <div>
-                        <label class="nexora-modal-label">Province</label>
-                        <input type="text" name="province" value="{{ old('province') }}" class="nexora-modal-input" placeholder="e.g. Cavite" required>
-                        @error('province')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="nexora-modal-label">City / Municipality</label>
-                        <input type="text" name="city" value="{{ old('city') }}" class="nexora-modal-input" placeholder="e.g. Dasmariñas" required>
-                        @error('city')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
                         <label class="nexora-modal-label">Address</label>
-                        <input type="text" name="address_description" value="{{ old('address_description') }}" class="nexora-modal-input" placeholder="e.g. Blk 5 Lot 12, near covered court" required>
-                        @error('address_description')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="nexora-modal-label">Country</label>
-                        <input type="text" value="Philippines" class="nexora-modal-input" disabled>
+                        <input type="text" name="address" value="{{ old('address') }}" class="nexora-modal-input" placeholder="e.g. Blk 5 Lot 12, Salawag, Dasmariñas, Cavite">
+                        @error('address')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
@@ -174,12 +155,6 @@
                             <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="nexora-modal-label">Barangay</label>
-                        <input type="text" name="barangay" value="{{ old('barangay') }}" class="nexora-modal-input" placeholder="e.g. Salawag" required>
-                        @error('barangay')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
@@ -220,23 +195,9 @@
                         @error('capacity_units')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="nexora-modal-label">Province</label>
-                        <input type="text" name="province" id="edit_province" value="{{ old('province') }}" class="nexora-modal-input" required>
-                        @error('province')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="nexora-modal-label">City / Municipality</label>
-                        <input type="text" name="city" id="edit_city" value="{{ old('city') }}" class="nexora-modal-input" required>
-                        @error('city')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
                         <label class="nexora-modal-label">Address</label>
-                        <input type="text" name="address_description" id="edit_address" value="{{ old('address_description') }}" class="nexora-modal-input">
-                        @error('address_description')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="nexora-modal-label">Country</label>
-                        <input type="text" value="Philippines" class="nexora-modal-input" disabled>
+                        <input type="text" name="address" id="edit_address" value="{{ old('address') }}" class="nexora-modal-input" placeholder="e.g. Blk 5 Lot 12, Salawag, Dasmariñas, Cavite">
+                        @error('address')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="nexora-modal-label">Status</label>
@@ -245,11 +206,6 @@
                             <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status')<p class="nexora-modal-error">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="nexora-modal-label">Barangay</label>
-                        <input type="text" name="barangay" id="edit_barangay" value="{{ old('barangay') }}" class="nexora-modal-input">
-                        @error('barangay')<p class="nexora-modal-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
@@ -320,15 +276,12 @@
     // Edit Modal
     const editModal = document.getElementById('editWarehouseModal');
     const editForm = document.getElementById('editWarehouseForm');
-    function openEditModal(id, name, capacity, province, city, address, status, barangay) {
+    function openEditModal(id, name, capacity, address, status) {
         editForm.action = '/warehouse/' + id;
         document.getElementById('edit_name').value = name;
         document.getElementById('edit_capacity_units').value = capacity;
-        document.getElementById('edit_province').value = province;
-        document.getElementById('edit_city').value = city;
         document.getElementById('edit_address').value = address;
         document.getElementById('edit_status').value = status;
-        document.getElementById('edit_barangay').value = barangay;
         editModal.style.opacity = '1';
         editModal.style.pointerEvents = 'auto';
     }

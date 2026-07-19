@@ -12,11 +12,7 @@ class Warehouse extends Model
 
     protected $fillable = [
         'name',
-        'province',
-        'city',
-        'barangay',
-        'address_description',
-        'country',
+        'address',
         'capacity_units',
         'status',
         'last_activity_at',

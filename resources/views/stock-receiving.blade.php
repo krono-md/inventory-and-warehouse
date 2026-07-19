@@ -6,7 +6,7 @@
 <style>
     .status-badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
     .status-pending { background: #fef9c3; color: #854d0e; }
-    .status-in-transit { background: #dbeafe; color: #1e40af; }
+    .status-in-transit, .status-intransit { background: #dbeafe; color: #1e40af; }
     .status-approved { background: #dcfce7; color: #166534; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
 
@@ -84,7 +84,7 @@
                 <tbody>
                     @forelse ($deliveries as $delivery)
                         @php
-                            $isProcessed = in_array($delivery->shipment_number, $processedShipments);
+                            $isProcessed = $deliveryProcessed[$delivery->id] ?? false;
                         @endphp
                         <tr style="border-bottom:1px solid #e2e8f0;{{ $isProcessed ? 'opacity:0.5;' : '' }}">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $delivery->shipment_number }}</td>

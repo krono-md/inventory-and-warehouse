@@ -48,7 +48,7 @@ class StockTransferController extends Controller
         $itemsByWarehouse = $stockLevels
             ->filter(fn ($sl) => ($sl->stock - $sl->reserved_quantity) > 0)
             ->groupBy('warehouse_id')
-            ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+            ->map(fn ($levels) => $levels->pluck('item')->filter()->unique('id')->values());
 
         $stockMap = $stockLevels->mapWithKeys(
             fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock - $sl->reserved_quantity]
@@ -168,12 +168,19 @@ class StockTransferController extends Controller
             }
 
             if (!$destination) {
-                $destination = StockLevel::create([
-                    'item_id' => $transfer->item_id,
-                    'warehouse_id' => $transfer->to_warehouse_id,
-                    'stock' => 0,
-                    'reorder_threshold' => $source->reorder_threshold,
-                ]);
+                try {
+                    $destination = StockLevel::create([
+                        'item_id' => $transfer->item_id,
+                        'warehouse_id' => $transfer->to_warehouse_id,
+                        'stock' => 0,
+                        'reorder_threshold' => $source->reorder_threshold,
+                    ]);
+                } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+                    $destination = StockLevel::where('item_id', $transfer->item_id)
+                        ->where('warehouse_id', $transfer->to_warehouse_id)
+                        ->lockForUpdate()
+                        ->first();
+                }
             }
 
             $reference = $transfer->reference;

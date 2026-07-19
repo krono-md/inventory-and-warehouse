@@ -23,15 +23,10 @@ class WarehouseController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'province' => 'required|string|max:100',
-            'city' => 'required|string|max:100',
-            'barangay' => 'required|string|max:100',
-            'address_description' => 'required|string',
+            'address' => 'nullable|string|max:500',
             'capacity_units' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
         ]);
-
-        $validated['country'] = 'Philippines';
 
         Warehouse::create($validated);
 
@@ -42,10 +37,7 @@ class WarehouseController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'province' => 'required|string|max:100',
-            'city' => 'required|string|max:100',
-            'barangay' => 'nullable|string|max:100',
-            'address_description' => 'nullable|string',
+            'address' => 'nullable|string|max:500',
             'capacity_units' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
         ]);

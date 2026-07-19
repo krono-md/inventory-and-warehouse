@@ -19,7 +19,7 @@ class OrderController extends Controller
             'order_reference' => 'required|string|max:100',
             'source' => 'nullable|string|max:50',
             'items' => 'required|array|min:1',
-            'items.*.sku' => 'required|string|max:50',
+            'items.*.sku' => 'required|string|max:50|exists:items,sku',
             'items.*.warehouse_id' => 'required|exists:warehouses,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);

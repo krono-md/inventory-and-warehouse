@@ -55,7 +55,7 @@ class StockAdjustmentController extends Controller
 
         $itemsByWarehouse = $stockLevels
             ->groupBy('warehouse_id')
-            ->map(fn ($levels) => $levels->pluck('item')->unique('id')->values());
+            ->map(fn ($levels) => $levels->pluck('item')->filter()->unique('id')->values());
 
         $stockMap = $stockLevels->mapWithKeys(
             fn ($sl) => [$sl->warehouse_id . '-' . $sl->item_id => $sl->stock - $sl->reserved_quantity]
