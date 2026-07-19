@@ -121,7 +121,7 @@ class OrderController extends Controller
             foreach ($reservations as $reservation) {
                 $reservation = OrderReservation::lockForUpdate()->find($reservation->id);
 
-                if ($reservation->status !== 'reserved') {
+                if (!$reservation || $reservation->status !== 'reserved') {
                     continue;
                 }
 
@@ -181,7 +181,7 @@ class OrderController extends Controller
             foreach ($reservations as $reservation) {
                 $reservation = OrderReservation::lockForUpdate()->find($reservation->id);
 
-                if ($reservation->status !== 'reserved') {
+                if (!$reservation || $reservation->status !== 'reserved') {
                     continue;
                 }
 
