@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\OrderFulfillment;
 use App\Models\OrderReservation;
 use App\Models\StockLevel;
 use App\Models\StockMovement;
@@ -85,10 +86,13 @@ class ItemCatalogController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
+        $packingMaterials = OrderFulfillment::orderByDesc('created_at')->get();
+
         return view('item-catalog', [
             'items' => $paginated,
             'warehouses' => $warehouses,
             'categories' => $categories,
+            'packingMaterials' => $packingMaterials,
             'inStockCount' => $allLevels->filter(fn ($l) => $l->status === 'in_stock')->count(),
             'lowStockCount' => $allLevels->filter(fn ($l) => $l->status === 'low_stock')->count(),
             'outOfStockCount' => $allLevels->filter(fn ($l) => $l->status === 'out_of_stock')->count(),
@@ -157,5 +161,30 @@ class ItemCatalogController extends Controller
         $item->delete();
 
         return redirect()->route('item-catalog')->with('success', "Item '{$sku}' deleted successfully.");
+    }
+
+    public function storePackingMaterial(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'stock_qty' => 'required|integer|min:0',
+            'low_stock_threshold' => 'required|integer|min:0',
+            'is_box' => 'boolean',
+            'box_size' => 'nullable|string|max:50',
+        ]);
+
+        $validated['is_box'] = $request->boolean('is_box');
+
+        OrderFulfillment::create($validated);
+
+        return redirect()->route('item-catalog')->with('success', 'Packing material added.');
+    }
+
+    public function destroyPackingMaterial($id)
+    {
+        $material = OrderFulfillment::findOrFail($id);
+        $material->delete();
+
+        return redirect()->route('item-catalog')->with('success', 'Packing material deleted.');
     }
 }

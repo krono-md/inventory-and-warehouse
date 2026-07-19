@@ -109,8 +109,8 @@
                     @forelse ($transfers as $transfer)
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->reference }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->item->name }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->item->sku ?? '—' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $transfer->item?->name ?? 'Deleted' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->item?->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->fromWarehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->toWarehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;font-weight:600;">{{ $transfer->quantity }}</td>
@@ -118,7 +118,7 @@
                                 <span class="status-badge status-{{ $transfer->status }}">{{ ucfirst($transfer->status) }}</span>
                             </td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->approver?->username ?? $transfer->approver?->name ?? '—' }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->created_at->format('M d, Y') }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $transfer->created_at?->format('M d, Y') ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @error("trf_action_{$transfer->id}")
                                     <p style="color:#ef4444;font-size:11px;margin:0 0 6px 0;">{{ $message }}</p>

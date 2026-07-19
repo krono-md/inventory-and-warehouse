@@ -61,6 +61,9 @@
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
                         <div style="min-width:0;display:flex;flex-direction:column;justify-content:center;">
                             <p style="font-size:15px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ data_get($warehouse, 'name') }}</p>
+                            @if(data_get($warehouse, 'address'))
+                                <p style="font-size:11px;color:#94a3b8;margin-top:4px;">{{ data_get($warehouse, 'address') }}</p>
+                            @endif
                         </div>
                         <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;background:rgba(34,197,94,0.12);color:#22c55e;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">
                             <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
@@ -91,9 +94,6 @@
                     <div class="capacity-track">
                         <div class="capacity-bar" style="width:{{ data_get($warehouse, 'capacity_percentage') }}%;"></div>
                     </div>
-                    @if(data_get($warehouse, 'address'))
-                        <p style="font-size:11px;color:#64748b;margin-top:12px;">{{ data_get($warehouse, 'address') }}</p>
-                    @endif
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
                         <div style="display:flex;gap:6px;">
                             <button onclick="openEditModal({{ $warehouse->id }}, '{{ addslashes($warehouse->name) }}', {{ $warehouse->capacity_units }}, '{{ addslashes($warehouse->address ?? '') }}', '{{ $warehouse->status }}')" style="background:transparent;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;display:flex;align-items:center;" title="Edit">

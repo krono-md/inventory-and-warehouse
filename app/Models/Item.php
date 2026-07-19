@@ -41,7 +41,7 @@ class Item extends Model
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(stock - reserved_quantity) <= 0');
+                ->havingRaw('COALESCE(SUM(stock - reserved_quantity), 0) <= 0');
         });
     }
 
@@ -50,15 +50,15 @@ class Item extends Model
         return $query->whereIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
-                ->whereRaw('stock - reserved_quantity <= reorder_threshold')
-                ->whereRaw('stock - reserved_quantity > 0')
+                ->whereRaw('COALESCE(stock - reserved_quantity, 0) <= reorder_threshold')
+                ->whereRaw('COALESCE(stock - reserved_quantity, 0) > 0')
                 ->where('reorder_threshold', '>', 0)
                 ->groupBy('item_id');
         })->whereIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(stock - reserved_quantity) > 0');
+                ->havingRaw('COALESCE(SUM(stock - reserved_quantity), 0) > 0');
         });
     }
 
@@ -68,12 +68,12 @@ class Item extends Model
             $sq->select('item_id')
                 ->from('stock_levels')
                 ->groupBy('item_id')
-                ->havingRaw('SUM(stock - reserved_quantity) > 0');
+                ->havingRaw('COALESCE(SUM(stock - reserved_quantity), 0) > 0');
         })->whereNotIn('items.id', function ($sq) {
             $sq->select('item_id')
                 ->from('stock_levels')
-                ->whereRaw('stock - reserved_quantity <= reorder_threshold')
-                ->whereRaw('stock - reserved_quantity > 0')
+                ->whereRaw('COALESCE(stock - reserved_quantity, 0) <= reorder_threshold')
+                ->whereRaw('COALESCE(stock - reserved_quantity, 0) > 0')
                 ->where('reorder_threshold', '>', 0)
                 ->groupBy('item_id');
         });

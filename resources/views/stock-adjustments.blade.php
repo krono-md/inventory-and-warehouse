@@ -121,8 +121,8 @@
                     @forelse ($adjustments as $adjustment)
                         <tr style="border-bottom:1px solid #e2e8f0;">
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $adjustment->id }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $adjustment->item->name }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->item->sku ?? '—' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ $adjustment->item?->name ?? 'Deleted' }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->item?->sku ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->warehouse?->name ?? 'Deleted' }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;font-weight:600;">{{ $adjustment->quantity }}</td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#132B52;">{{ ucfirst($adjustment->type) }}</td>
@@ -131,7 +131,7 @@
                                 <span class="status-badge status-{{ $adjustment->status }}">{{ ucfirst($adjustment->status) }}</span>
                             </td>
                             <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->approver?->name ?? '—' }}</td>
-                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->created_at->format('M d, Y') }}</td>
+                            <td style="text-align:center;padding:12px 8px;font-size:13px;color:#5B7A9D;">{{ $adjustment->created_at?->format('M d, Y') ?? '—' }}</td>
                             <td style="text-align:center;padding:12px 8px;">
                                 @error("adj_action_{$adjustment->id}")
                                     <p style="color:#ef4444;font-size:11px;margin:0 0 6px 0;">{{ $message }}</p>

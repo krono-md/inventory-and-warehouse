@@ -16,7 +16,9 @@ class StockLevel extends Model
     ];
 
     protected $casts = [
+        'stock' => 'integer',
         'reserved_quantity' => 'integer',
+        'reorder_threshold' => 'integer',
     ];
 
     public function item(): BelongsTo

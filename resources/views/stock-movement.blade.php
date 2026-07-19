@@ -11,7 +11,7 @@
         </div>
         <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
             <p style="font-size:15px;color:#94a3b8;">Total Outbound</p>
-            <p style="font-size:40px;font-weight:bold;color:#fff;">{{ number_format($totals['outbound']) }}</p>
+            <p style="font-size:40px;font-weight:bold;color:#fff;">{{ number_format(abs($totals['outbound'])) }}</p>
         </div>
         <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
             <p style="font-size:15px;color:#94a3b8;">Transfer</p>
@@ -19,7 +19,7 @@
         </div>
         <div style="background:#0b1e3d;padding:20px;border-radius:20px;">
             <p style="font-size:15px;color:#94a3b8;">Net Change</p>
-            <p style="font-size:40px;font-weight:bold;color:{{ $totals['net'] >= 0 ? '#22c55e' : '#ef4444' }};">{{ ($totals['net'] >= 0 ? '+' : '') . number_format($totals['net']) }}</p>
+            <p style="font-size:40px;font-weight:bold;color:{{ $totals['net'] >= 0 ? '#22c55e' : '#ef4444' }};">{{ ($totals['net'] > 0 ? '+' : '') . number_format($totals['net']) }}</p>
         </div>
     </div>
 
@@ -134,7 +134,7 @@
                             </td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->reference ?? '-' }}</td>
                             <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->performer?->username ?? $movement->performer?->name ?? 'System' }}</td>
-                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->created_at->format('M d, Y h:i A') }}</td>
+                            <td style="text-align:center;padding:10px 6px;color:#000;font-size:12px;">{{ $movement->created_at?->format('M d, Y h:i A') ?? '—' }}</td>
                         </tr>
                     @empty
                         <tr>

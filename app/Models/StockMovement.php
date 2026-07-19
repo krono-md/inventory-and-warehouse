@@ -26,6 +26,17 @@ class StockMovement extends Model
         'created_at' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if ($model->created_at === null) {
+                $model->created_at = now();
+            }
+        });
+    }
+
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
